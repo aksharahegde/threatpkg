@@ -78,7 +78,11 @@ watch(
         :pending="pending && !summary"
         :range="filters.range"
       />
-      <FeedEcosystemChart :summary="summary" :pending="pending && !summary" />
+      <FeedEcosystemChart
+        :summary="summary"
+        :pending="pending && !summary"
+        :range="filters.range"
+      />
       <ChartsFeedTrendChart :counts="trend" :range="filters.range" />
     </aside>
 
