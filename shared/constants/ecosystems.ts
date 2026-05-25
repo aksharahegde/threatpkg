@@ -5,7 +5,9 @@ export const ECOSYSTEMS = [
   'crates',
   'maven',
   'nuget',
-  'rubygems'
+  'rubygems',
+  'packagist',
+  'pub'
 ] as const
 
 export type Ecosystem = (typeof ECOSYSTEMS)[number]
@@ -85,6 +87,24 @@ export const ECOSYSTEM_META: EcosystemMeta[] = [
     githubNames: ['rubygems'],
     cssClass: 'tp-eco-rubygems',
     colorVar: '--tp-rubygems'
+  },
+  {
+    id: 'packagist',
+    label: 'LARAVEL',
+    osvCsvUrl: `${OSV_BASE}/Packagist/modified_id.csv`,
+    osvNames: ['packagist', 'composer'],
+    githubNames: ['composer'],
+    cssClass: 'tp-eco-packagist',
+    colorVar: '--tp-packagist'
+  },
+  {
+    id: 'pub',
+    label: 'FLUTTER',
+    osvCsvUrl: `${OSV_BASE}/Pub/modified_id.csv`,
+    osvNames: ['pub'],
+    githubNames: ['pub'],
+    cssClass: 'tp-eco-pub',
+    colorVar: '--tp-pub'
   }
 ]
 
@@ -119,6 +139,19 @@ export function inferEcosystemFromText(text: string): Ecosystem | null {
   const lower = text.toLowerCase()
 
   const rules: { eco: Ecosystem; patterns: RegExp[] }[] = [
+    {
+      eco: 'packagist',
+      patterns: [
+        /\blaravel\b/,
+        /\bpackagist\b/,
+        /\bcomposer\b/,
+        /\bphp package\b/
+      ]
+    },
+    {
+      eco: 'pub',
+      patterns: [/\bflutter\b/, /\bpub\.dev\b/, /\bdart package\b/, /\bpubspec\b/]
+    },
     { eco: 'pypi', patterns: [/\bpypi\b/, /\bpython package\b/, /\bpip install\b/] },
     { eco: 'crates', patterns: [/\bcrates\.io\b/, /\bcargo\b/, /\brust crate\b/] },
     { eco: 'go', patterns: [/\bgo module\b/, /\bgolang\b/, /\bpkg\.go\.dev\b/] },
@@ -169,6 +202,16 @@ export function remediationCommands(
       return [
         `$ gem uninstall ${packageName}`,
         `# pin safe version in Gemfile`
+      ]
+    case 'packagist':
+      return [
+        `$ composer remove ${packageName}`,
+        `# audit composer.lock and pin a safe version`
+      ]
+    case 'pub':
+      return [
+        `$ flutter pub remove ${packageName}`,
+        `$ dart pub remove ${packageName}  # non-Flutter Dart apps`
       ]
     case 'npm':
     default:

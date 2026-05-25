@@ -17,6 +17,9 @@ describe('normalizeEcosystem', () => {
     expect(normalizeEcosystem('Go')).toBe('go')
     expect(normalizeEcosystem('Maven')).toBe('maven')
     expect(normalizeEcosystem('RubyGems')).toBe('rubygems')
+    expect(normalizeEcosystem('Packagist')).toBe('packagist')
+    expect(normalizeEcosystem('composer')).toBe('packagist')
+    expect(normalizeEcosystem('Pub')).toBe('pub')
   })
 
   it('returns null for unknown ecosystems', () => {

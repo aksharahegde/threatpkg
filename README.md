@@ -1,6 +1,6 @@
 # ThreatPkg
 
-Public realtime dashboard for open-source package threat intelligence across **npm**, **PyPI**, **Go**, **crates.io**, **Maven**, **NuGet**, and **RubyGems** — compromised packages, supply-chain incidents, and advisory IDs (CVE, GHSA, OSV) in one searchable feed.
+Public realtime dashboard for open-source package threat intelligence across **npm**, **PyPI**, **Go**, **crates.io**, **Maven**, **NuGet**, **RubyGems**, **Packagist (PHP/Laravel)**, and **Pub (Dart/Flutter)** — compromised packages, supply-chain incidents, and advisory IDs (CVE, GHSA, OSV) in one searchable feed.
 
 ## Features
 
@@ -80,7 +80,7 @@ Scheduled sync runs every 30 minutes via Nitro (`sync-all` task) when the server
 |------|-------------|
 | `/` | Live threat feed |
 | `/incident/[id]` | Incident detail |
-| `/package/[ecosystem]/[name]` | Package reputation (`npm`, `pypi`, `go`, `crates`, `maven`, `nuget`, `rubygems`) |
+| `/package/[ecosystem]/[name]` | Package reputation (`npm`, `pypi`, `go`, `crates`, `maven`, `nuget`, `rubygems`, `packagist`, `pub`) |
 | `/package/[name]` | Redirects to ecosystem-scoped URL |
 | `/about` | About the project |
 

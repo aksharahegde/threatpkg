@@ -12,5 +12,9 @@ describe('packagePagePath', () => {
     expect(packagePagePath('go', 'github.com/foo/bar')).toBe(
       '/package/go/github.com%2Ffoo%2Fbar'
     )
+    expect(packagePagePath('packagist', 'laravel-lang/lang')).toBe(
+      '/package/packagist/laravel-lang%2Flang'
+    )
+    expect(packagePagePath('pub', 'firebase_core')).toBe('/package/pub/firebase_core')
   })
 })

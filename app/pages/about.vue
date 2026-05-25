@@ -4,7 +4,7 @@ definePageMeta({ layout: 'dashboard' })
 useSeoMeta({
   title: 'About',
   description:
-    'ThreatPkg is a public realtime dashboard for open-source package threat intelligence across npm, PyPI, Go, Rust, Java, .NET, and RubyGems.',
+    'ThreatPkg is a public realtime dashboard for open-source package threat intelligence across npm, PyPI, Go, Rust, Java, .NET, RubyGems, Laravel/Composer, and Flutter.',
   ogTitle: 'About · ThreatPkg',
   ogDescription:
     'ThreatPkg is a public realtime dashboard for open-source package threat intelligence across major package ecosystems.'
@@ -15,7 +15,7 @@ const dataSources = [
     id: 'osv',
     name: 'OSV',
     description:
-      'Open Source Vulnerabilities database (npm, PyPI, Go, crates.io, Maven, NuGet, RubyGems).',
+      'Open Source Vulnerabilities database (npm, PyPI, Go, crates.io, Maven, NuGet, RubyGems, Packagist, Pub).',
     url: 'https://osv.dev/'
   },
   {
@@ -56,7 +56,8 @@ const dataSources = [
       <div class="space-y-6 text-sm leading-relaxed text-[var(--tp-text-muted)]">
         <p>
           ThreatPkg is a public threat intelligence dashboard for npm, PyPI, Go,
-          Rust (crates.io), Java (Maven), .NET (NuGet), and RubyGems: compromised
+          Rust (crates.io), Java (Maven), .NET (NuGet), RubyGems, PHP/Laravel
+          (Packagist), and Dart/Flutter (pub.dev): compromised
           packages, malicious releases, and advisory identifiers
           (CVE, GHSA, OSV) in one searchable feed. Incidents are ingested on a
           regular schedule and attributed to the sources below.

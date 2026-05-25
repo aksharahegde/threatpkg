@@ -22,6 +22,8 @@
   --tp-maven: #e76f00;
   --tp-nuget: #512bd4;
   --tp-rubygems: #cc342d;
+  --tp-packagist: #777bb4;
+  --tp-pub: #02569b;
   --tp-live: #0d9f4f;
   --tp-grid: rgb(12 14 18 / 0.04);
   --feed-surface: var(--tp-surface);
@@ -56,6 +58,8 @@
   --tp-maven: #ff9f43;
   --tp-nuget: #9b8cff;
   --tp-rubygems: #ff6b6b;
+  --tp-packagist: #a5b4fc;
+  --tp-pub: #54c5f8;
   --tp-live: #00ff41;
   --tp-grid: rgb(255 255 255 / 0.04);
   --feed-surface: var(--tp-surface);
@@ -148,6 +152,14 @@ body {
 
 .tp-eco-rubygems {
   color: var(--tp-rubygems);
+}
+
+.tp-eco-packagist {
+  color: var(--tp-packagist);
+}
+
+.tp-eco-pub {
+  color: var(--tp-pub);
 }
 
 .threat-feed-table {

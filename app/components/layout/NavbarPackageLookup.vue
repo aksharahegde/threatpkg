@@ -53,7 +53,7 @@ function onSubmit(e: Event) {
         v-model="query"
         type="search"
         autocomplete="off"
-        placeholder="search package (npm, pypi, go, crates, …)…"
+        placeholder="search package (npm, laravel, flutter, …)…"
         class="font-tp-mono w-full rounded-sm border border-[var(--tp-border)] bg-[var(--tp-surface-inset)] px-3 py-1.5 text-xs text-[var(--tp-text)] placeholder:text-[var(--tp-text-dim)] focus:border-[var(--tp-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--tp-accent)]"
         data-testid="layout-package-lookup-input"
       />

@@ -12,6 +12,9 @@ describe('mapOsvEcosystem', () => {
     expect(mapOsvEcosystem('crates.io')).toBe('crates')
     expect(mapOsvEcosystem('Go')).toBe('go')
     expect(mapOsvEcosystem('NuGet')).toBe('nuget')
+    expect(mapOsvEcosystem('Packagist')).toBe('packagist')
+    expect(mapOsvEcosystem('composer')).toBe('packagist')
+    expect(mapOsvEcosystem('Pub')).toBe('pub')
   })
 })
 
@@ -20,6 +23,8 @@ describe('mapGithubEcosystem', () => {
     expect(mapGithubEcosystem('pip')).toBe('pypi')
     expect(mapGithubEcosystem('rust')).toBe('crates')
     expect(mapGithubEcosystem('go')).toBe('go')
+    expect(mapGithubEcosystem('composer')).toBe('packagist')
+    expect(mapGithubEcosystem('pub')).toBe('pub')
   })
 })
 
@@ -28,6 +33,8 @@ describe('inferEcosystemFromText', () => {
     expect(inferEcosystemFromText('Malware in foo — npm supply chain')).toBe('npm')
     expect(inferEcosystemFromText('PyPI typosquat campaign')).toBe('pypi')
     expect(inferEcosystemFromText('crates.io malicious crate')).toBe('crates')
+    expect(inferEcosystemFromText('Laravel Lang packages compromised')).toBe('packagist')
+    expect(inferEcosystemFromText('Flutter pub.dev dependency attack')).toBe('pub')
     expect(inferEcosystemFromText('Unrelated product launch')).toBeNull()
   })
 })

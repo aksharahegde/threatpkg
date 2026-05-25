@@ -14,7 +14,7 @@ const RSS_MAX_RESPONSE_BYTES = 2 * 1024 * 1024
 import { inferEcosystemFromText } from '../../shared/constants/ecosystems'
 
 const MALWARE_KEYWORDS =
-  /\b(malware|malicious|typosquat|supply[- ]chain|compromised|npm attack|pypi attack|dependency confusion|cargo|crates\.io|go module|maven|nuget|rubygems)\b/i
+  /\b(malware|malicious|typosquat|supply[- ]chain|compromised|npm attack|pypi attack|dependency confusion|cargo|crates\.io|go module|maven|nuget|rubygems|composer|packagist|laravel|flutter|pub\.dev)\b/i
 
 interface RssItem {
   title: string
