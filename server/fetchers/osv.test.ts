@@ -1,4 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { mockFetch } from '../test/mock-fetch'
 import { fetchOsvIncidents } from './osv'
 
 const NOW = Date.now()
@@ -21,27 +22,26 @@ const BENIGN_VULN = {
 }
 
 describe('fetchOsvIncidents', () => {
+  let restoreFetch: () => void
+
   beforeEach(() => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (url: string) => {
-        const u = String(url)
-        if (u.endsWith('modified_id.csv')) {
-          return new Response(RECENT_CSV, { status: 200 })
-        }
-        if (u.includes('/vulns/MAL-')) {
-          return Response.json(MALWARE_VULN, { status: 200 })
-        }
-        if (u.includes('/vulns/CVE-')) {
-          return Response.json(BENIGN_VULN, { status: 200 })
-        }
-        return new Response('not found', { status: 404 })
-      })
-    )
+    restoreFetch = mockFetch(async (url: string) => {
+      const u = String(url)
+      if (u.endsWith('modified_id.csv')) {
+        return new Response(RECENT_CSV, { status: 200 })
+      }
+      if (u.includes('/vulns/MAL-')) {
+        return Response.json(MALWARE_VULN, { status: 200 })
+      }
+      if (u.includes('/vulns/CVE-')) {
+        return Response.json(BENIGN_VULN, { status: 200 })
+      }
+      return new Response('not found', { status: 404 })
+    })
   })
 
   afterEach(() => {
-    vi.unstubAllGlobals()
+    restoreFetch()
   })
 
   it('ingests malware OSV records and skips non-malware CVEs', async () => {

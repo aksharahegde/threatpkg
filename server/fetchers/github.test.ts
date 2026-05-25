@@ -1,4 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { mockFetch } from '../test/mock-fetch'
 import { fetchGithubAdvisories } from './github'
 
 const ADVISORY = {
@@ -16,20 +17,19 @@ const ADVISORY = {
 }
 
 describe('fetchGithubAdvisories', () => {
+  let restoreFetch: () => void
+
   beforeEach(() => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async () =>
-        Response.json([ADVISORY], {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' }
-        })
-      )
+    restoreFetch = mockFetch(async () =>
+      Response.json([ADVISORY], {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      })
     )
   })
 
   afterEach(() => {
-    vi.unstubAllGlobals()
+    restoreFetch()
   })
 
   it('maps malware advisories to fetcher incidents', async () => {
@@ -46,13 +46,11 @@ describe('fetchGithubAdvisories', () => {
   })
 
   it('skips withdrawn advisories', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async () =>
-        Response.json(
-          [{ ...ADVISORY, withdrawn_at: new Date().toISOString() }],
-          { status: 200 }
-        )
+    restoreFetch()
+    restoreFetch = mockFetch(async () =>
+      Response.json(
+        [{ ...ADVISORY, withdrawn_at: new Date().toISOString() }],
+        { status: 200 }
       )
     )
     const incidents = await fetchGithubAdvisories()

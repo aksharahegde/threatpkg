@@ -1,4 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { mockFetch } from '../test/mock-fetch'
 import { fetchRssFeeds } from './rss'
 
 const SAMPLE_RSS = `<?xml version="1.0"?>
@@ -18,23 +19,22 @@ const SAMPLE_RSS = `<?xml version="1.0"?>
 </channel></rss>`
 
 describe('fetchRssFeeds', () => {
+  let restoreFetch: () => void
+
   beforeEach(() => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (url: string) => {
-        if (String(url).includes('socket.dev')) {
-          return new Response('', { status: 503 })
-        }
-        return new Response(SAMPLE_RSS, {
-          status: 200,
-          headers: { 'Content-Type': 'application/rss+xml' }
-        })
+    restoreFetch = mockFetch(async (url: string) => {
+      if (String(url).includes('socket.dev')) {
+        return new Response('', { status: 503 })
+      }
+      return new Response(SAMPLE_RSS, {
+        status: 200,
+        headers: { 'Content-Type': 'application/rss+xml' }
       })
-    )
+    })
   })
 
   afterEach(() => {
-    vi.unstubAllGlobals()
+    restoreFetch()
   })
 
   it('parses malware-related items and skips unrelated posts', async () => {
