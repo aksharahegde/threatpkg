@@ -11,9 +11,8 @@ export default defineTask({
     const result = await persistIncidents(items)
     await Promise.all([
       touchSourceSync('Snyk'),
-      touchSourceSync('Socket'),
       touchSourceSync('Phylum'),
-      touchSourceSync('JFrog Research')
+      touchSourceSync('JFrog Blog')
     ])
     return { result: { source: 'rss', fetched: items.length, ...result } }
   }

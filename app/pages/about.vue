@@ -30,12 +30,6 @@ const dataSources = [
     url: 'https://snyk.io/blog/'
   },
   {
-    id: 'socket',
-    name: 'Socket',
-    description: 'Open-source supply-chain security research.',
-    url: 'https://socket.dev/'
-  },
-  {
     id: 'phylum',
     name: 'Phylum',
     description: 'Package ecosystem threat research and analysis.',
@@ -43,9 +37,9 @@ const dataSources = [
   },
   {
     id: 'jfrog',
-    name: 'JFrog Security Research',
-    description: 'Malware and dependency threat intelligence.',
-    url: 'https://research.jfrog.com/'
+    name: 'JFrog Blog',
+    description: 'Security and supply-chain posts from the JFrog blog RSS feed.',
+    url: 'https://jfrog.com/blog/'
   }
 ] as const
 </script>

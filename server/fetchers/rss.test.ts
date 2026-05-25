@@ -22,10 +22,7 @@ describe('fetchRssFeeds', () => {
   let restoreFetch: () => void
 
   beforeEach(() => {
-    restoreFetch = mockFetch(async (url: string) => {
-      if (String(url).includes('socket.dev')) {
-        return new Response('', { status: 503 })
-      }
+    restoreFetch = mockFetch(async () => {
       return new Response(SAMPLE_RSS, {
         status: 200,
         headers: { 'Content-Type': 'application/rss+xml' }

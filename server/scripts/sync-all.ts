@@ -37,9 +37,8 @@ async function main() {
     touchSourceSync('OSV'),
     touchSourceSync('GitHub Advisories'),
     touchSourceSync('Snyk'),
-    touchSourceSync('Socket'),
     touchSourceSync('Phylum'),
-    touchSourceSync('JFrog Research')
+    touchSourceSync('JFrog Blog')
   ])
 
   await closeDb()

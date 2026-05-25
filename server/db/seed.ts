@@ -20,9 +20,13 @@ async function seed() {
     { name: 'OSV', type: 'api', url: 'https://osv.dev/', enabled: true },
     { name: 'GitHub Advisories', type: 'api', url: 'https://github.com/advisories', enabled: true },
     { name: 'Snyk', type: 'rss', url: 'https://snyk.io/blog/feed/', enabled: true },
-    { name: 'Socket', type: 'rss', url: 'https://socket.dev/api/blog/rss.xml', enabled: true },
     { name: 'Phylum', type: 'rss', url: 'https://blog.phylum.io/rss.xml', enabled: true },
-    { name: 'JFrog Research', type: 'rss', url: 'https://research.jfrog.com/feed/', enabled: true }
+    {
+      name: 'JFrog Blog',
+      type: 'rss',
+      url: 'https://jfrog.com/blog/feed/',
+      enabled: true
+    }
   ])
 
   await client.end()

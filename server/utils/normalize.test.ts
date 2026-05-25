@@ -39,7 +39,6 @@ describe('normalizeThreatType', () => {
 describe('normalizeSource', () => {
   it('maps known sources and defaults unknown to osv', () => {
     expect(normalizeSource('GitHub')).toBe('github')
-    expect(normalizeSource('socket')).toBe('socket')
     expect(normalizeSource('custom-feed')).toBe('osv')
   })
 })

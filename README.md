@@ -72,7 +72,7 @@ Scheduled sync runs every 30 minutes via Nitro (`sync-all` task) when the server
 |--------|------|-------|
 | OSV | API | Recent npm / PyPI vulns and malware (modified-id lists) |
 | GitHub Advisories | API | Optional `GITHUB_TOKEN` for higher rate limits |
-| Snyk, Socket, Phylum, JFrog | RSS | Security research blog feeds |
+| Snyk, Phylum, JFrog | RSS | Security research blog feeds |
 
 ## Routes
 

@@ -7,25 +7,9 @@ import {
   severityToRiskScore
 } from '../utils/infer-threat'
 
+import { getActiveRssFeeds, type RssFeedConfig } from './rss-feeds'
+
 const RSS_MAX_RESPONSE_BYTES = 2 * 1024 * 1024
-
-interface RssFeedConfig {
-  url: string
-  source: 'snyk' | 'socket' | 'phylum' | 'jfrog'
-}
-
-const RSS_FEEDS: RssFeedConfig[] = [
-  { url: 'https://snyk.io/blog/feed/', source: 'snyk' },
-  {
-    url: 'https://socket.dev/api/blog/rss.xml',
-    source: 'socket'
-  },
-  { url: 'https://blog.phylum.io/rss.xml', source: 'phylum' },
-  {
-    url: 'https://research.jfrog.com/feed/',
-    source: 'jfrog'
-  }
-]
 
 const MALWARE_KEYWORDS =
   /\b(malware|malicious|typosquat|supply[- ]chain|compromised|npm attack|pypi attack|dependency confusion)\b/i
@@ -74,7 +58,10 @@ function parseRssItems(xml: string): RssItem[] {
   return items
 }
 
-function itemToIncident(item: RssItem, source: RssFeedConfig['source']): FetcherIncident | null {
+function itemToIncident(
+  item: RssItem,
+  source: RssFeedConfig['source']
+): FetcherIncident | null {
   const text = `${item.title} ${item.description}`
   if (!MALWARE_KEYWORDS.test(text)) return null
 
@@ -144,7 +131,7 @@ async function fetchFeed(config: RssFeedConfig): Promise<FetcherIncident[]> {
 }
 
 export async function fetchRssFeeds(): Promise<FetcherIncident[]> {
-  const batches = await Promise.allSettled(RSS_FEEDS.map(fetchFeed))
+  const batches = await Promise.allSettled(getActiveRssFeeds().map(fetchFeed))
   const results: FetcherIncident[] = []
   const seen = new Set<string>()
 

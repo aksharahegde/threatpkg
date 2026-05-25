@@ -32,9 +32,8 @@ export default defineTask({
       touchSourceSync('OSV'),
       touchSourceSync('GitHub Advisories'),
       touchSourceSync('Snyk'),
-      touchSourceSync('Socket'),
       touchSourceSync('Phylum'),
-      touchSourceSync('JFrog Research')
+      touchSourceSync('JFrog Blog')
     ])
 
     return {
