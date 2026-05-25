@@ -16,14 +16,17 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const secret = process.env.SYNC_SECRET
-  if (secret) {
-    const provided =
-      getHeader(event, 'x-sync-secret') ??
-      getQuery(event).secret
-    if (provided !== secret) {
-      throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
-    }
+  const secret = process.env.SYNC_SECRET?.trim()
+  if (!secret) {
+    throw createError({
+      statusCode: 503,
+      statusMessage: 'Manual sync is disabled (set SYNC_SECRET to enable)'
+    })
+  }
+
+  const provided = getHeader(event, 'x-sync-secret')
+  if (provided !== secret) {
+    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
   const [osv, github, rss] = await Promise.all([

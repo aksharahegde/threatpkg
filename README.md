@@ -46,7 +46,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `DATABASE_URL` | Yes | PostgreSQL connection string |
 | `NUXT_PUBLIC_SITE_URL` | No | Canonical site URL for SEO / OG (default `http://localhost:3000`) |
 | `GITHUB_TOKEN` | No | Raises GitHub Advisory API rate limits during sync |
-| `SYNC_SECRET` | No | Protects `POST /api/sync` when set |
+| `SYNC_SECRET` | For manual sync | Required to enable `POST /api/sync` (send as `x-sync-secret` header) |
 | `REDIS_URL` | No | Reserved for future use |
 | `OPENAI_API_KEY` | No | Reserved for AI summary enrichment |
 
@@ -93,9 +93,11 @@ Scheduled sync runs every 30 minutes via Nitro (`sync-all` task) when the server
 | `GET /api/packages/:ecosystem/:name` | Package reputation + history |
 | `GET /api/packages/resolve/:name` | Resolve package name to primary ecosystem |
 | `GET /api/sources` | Sync freshness / source status |
-| `POST /api/sync` | Trigger ingest (requires `SYNC_SECRET` when configured) |
+| `POST /api/sync` | Trigger ingest (disabled until `SYNC_SECRET` is set; header `x-sync-secret` required) |
 
 Query parameters for `/api/feed`: `ecosystem`, `severity`, `threatType`, `source`, `range` (`24h` \| `7d` \| `30d`), `q`, `sort` (`published` \| `risk`), `cursor`, `limit`.
+
+API routes are rate-limited (120 requests per minute per client IP) and responses include standard security headers (CSP, `X-Frame-Options`, etc.). RSS ingest caps response bodies at 2 MiB.
 
 ## Spec
 

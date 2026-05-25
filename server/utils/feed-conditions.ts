@@ -1,6 +1,7 @@
-import { and, eq, exists, gte, ilike, or, sql } from 'drizzle-orm'
+import { and, eq, exists, gte, or, sql } from 'drizzle-orm'
 import type { SQL } from 'drizzle-orm'
 import type { FeedQuery } from '#shared/types/threat'
+import { escapeLikePattern } from '#shared/utils/escape-like'
 import { getDb } from '../db/index'
 import { incidents, indicators } from '../db/schema'
 
@@ -20,13 +21,18 @@ export function feedFilterFromQuery(params: FeedQuery): FeedFilterQuery {
   }
 }
 
+function ilikeContains(column: unknown, term: string): SQL {
+  const pattern = `%${escapeLikePattern(term)}%`
+  return sql`${column} ILIKE ${pattern} ESCAPE '\\'`
+}
+
 function feedSearchCondition(db: ReturnType<typeof getDb>, q: string): SQL {
-  const pattern = `%${q}%`
+  const term = q.trim()
   return or(
-    ilike(incidents.packageName, pattern),
-    ilike(incidents.title, pattern),
-    ilike(incidents.externalId, pattern),
-    ilike(incidents.description, pattern),
+    ilikeContains(incidents.packageName, term),
+    ilikeContains(incidents.title, term),
+    ilikeContains(incidents.externalId, term),
+    ilikeContains(incidents.description, term),
     exists(
       db
         .select({ one: sql`1` })
@@ -34,7 +40,7 @@ function feedSearchCondition(db: ReturnType<typeof getDb>, q: string): SQL {
         .where(
           and(
             eq(indicators.incidentId, incidents.id),
-            ilike(indicators.value, pattern)
+            ilikeContains(indicators.value, term)
           )
         )
     )

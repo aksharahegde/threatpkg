@@ -1,10 +1,13 @@
 import type { FetcherIncident } from './types'
+import { readResponseTextBounded } from '../utils/fetch-bounded'
 import {
   extractPackageFromTitle,
   inferSeverity,
   inferThreatType,
   severityToRiskScore
 } from '../utils/infer-threat'
+
+const RSS_MAX_RESPONSE_BYTES = 2 * 1024 * 1024
 
 interface RssFeedConfig {
   url: string
@@ -122,7 +125,13 @@ async function fetchFeed(config: RssFeedConfig): Promise<FetcherIncident[]> {
     return []
   }
 
-  const xml = await res.text()
+  let xml: string
+  try {
+    xml = await readResponseTextBounded(res, RSS_MAX_RESPONSE_BYTES)
+  } catch (err) {
+    console.warn(`[rss] ${config.source} feed skipped (oversized or unreadable)`, err)
+    return []
+  }
   const items = parseRssItems(xml)
   const results: FetcherIncident[] = []
 
