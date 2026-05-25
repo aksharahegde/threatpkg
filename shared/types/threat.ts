@@ -1,5 +1,5 @@
-export const ECOSYSTEMS = ['npm', 'pypi'] as const
-export type Ecosystem = (typeof ECOSYSTEMS)[number]
+export { ECOSYSTEMS, type Ecosystem } from '../constants/ecosystems'
+import type { Ecosystem } from '../constants/ecosystems'
 
 export const SEVERITIES = ['critical', 'high', 'medium', 'low'] as const
 export type Severity = (typeof SEVERITIES)[number]

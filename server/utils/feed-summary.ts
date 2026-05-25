@@ -19,12 +19,19 @@ export async function getFeedSummary(
       total: sql<number>`count(*)::int`,
       critical: sql<number>`count(*) filter (where ${incidents.severity} = 'critical')::int`,
       high: sql<number>`count(*) filter (where ${incidents.severity} = 'high')::int`,
-      uniquePackages: sql<number>`count(distinct (${incidents.packageName}, ${incidents.ecosystem}))::int`,
-      npm: sql<number>`count(*) filter (where ${incidents.ecosystem} = 'npm')::int`,
-      pypi: sql<number>`count(*) filter (where ${incidents.ecosystem} = 'pypi')::int`
+      uniquePackages: sql<number>`count(distinct (${incidents.packageName}, ${incidents.ecosystem}))::int`
     })
     .from(incidents)
     .where(where)
+
+  const ecosystemRows = await db
+    .select({
+      ecosystem: incidents.ecosystem,
+      count: sql<number>`count(*)::int`
+    })
+    .from(incidents)
+    .where(where)
+    .groupBy(incidents.ecosystem)
 
   const threatRows = await db
     .select({
@@ -46,8 +53,13 @@ export async function getFeedSummary(
   const byEcosystem = Object.fromEntries(
     ECOSYSTEMS.map((eco) => [eco, 0])
   ) as Record<Ecosystem, number>
-  byEcosystem.npm = aggregate?.npm ?? 0
-  byEcosystem.pypi = aggregate?.pypi ?? 0
+
+  for (const row of ecosystemRows) {
+    const eco = row.ecosystem as Ecosystem
+    if ((ECOSYSTEMS as readonly string[]).includes(eco)) {
+      byEcosystem[eco] = row.count
+    }
+  }
 
   return {
     total: aggregate?.total ?? 0,

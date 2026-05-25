@@ -1,4 +1,5 @@
 import type { FetcherIncident, FetcherIndicator } from './types'
+import { ECOSYSTEM_META, mapOsvEcosystem } from '../../shared/constants/ecosystems'
 import {
   extractPackageFromTitle,
   inferSeverity,
@@ -7,12 +8,9 @@ import {
 } from '../utils/infer-threat'
 
 const OSV_API = 'https://api.osv.dev/v1'
-const NPM_MODIFIED_CSV =
-  'https://storage.googleapis.com/osv-vulnerabilities/npm/modified_id.csv'
-const PYPI_MODIFIED_CSV =
-  'https://storage.googleapis.com/osv-vulnerabilities/PyPI/modified_id.csv'
 
-const MAX_IDS_PER_ECOSYSTEM = 60
+const MAX_IDS_PER_ECOSYSTEM = 40
+const MAX_IDS_GLOBAL = 200
 const MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000
 
 interface OsvVuln {
@@ -83,9 +81,9 @@ function vulnToIncident(vuln: OsvVuln): FetcherIncident | null {
   if (!isMalwareRecord(vuln)) return null
 
   const affected = vuln.affected?.[0]?.package
-  const ecosystemRaw = affected?.ecosystem ?? 'npm'
-  const ecosystem =
-    ecosystemRaw.toLowerCase() === 'pypi' ? 'pypi' : 'npm'
+  const ecosystemRaw = affected?.ecosystem ?? ''
+  const ecosystem = mapOsvEcosystem(ecosystemRaw)
+  if (!ecosystem) return null
 
   const packageName =
     affected?.name ??
@@ -150,12 +148,11 @@ function vulnToIncident(vuln: OsvVuln): FetcherIncident | null {
 }
 
 export async function fetchOsvIncidents(): Promise<FetcherIncident[]> {
-  const [npmIds, pypiIds] = await Promise.all([
-    fetchRecentIds(NPM_MODIFIED_CSV),
-    fetchRecentIds(PYPI_MODIFIED_CSV)
-  ])
+  const idLists = await Promise.all(
+    ECOSYSTEM_META.map((meta) => fetchRecentIds(meta.osvCsvUrl))
+  )
 
-  const uniqueIds = [...new Set([...npmIds, ...pypiIds])]
+  const uniqueIds = [...new Set(idLists.flat())].slice(0, MAX_IDS_GLOBAL)
   const results: FetcherIncident[] = []
   const batchSize = 8
 

@@ -17,6 +17,11 @@
   --tp-accent-muted: rgb(232 106 0 / 0.12);
   --tp-npm: #d63d6a;
   --tp-pypi: #0077cc;
+  --tp-go: #00add8;
+  --tp-crates: #dea584;
+  --tp-maven: #e76f00;
+  --tp-nuget: #512bd4;
+  --tp-rubygems: #cc342d;
   --tp-live: #0d9f4f;
   --tp-grid: rgb(12 14 18 / 0.04);
   --feed-surface: var(--tp-surface);
@@ -46,6 +51,11 @@
   --tp-accent-muted: rgb(255 140 0 / 0.15);
   --tp-npm: #ff6b8a;
   --tp-pypi: #00a3ff;
+  --tp-go: #5dc9e2;
+  --tp-crates: #f0c090;
+  --tp-maven: #ff9f43;
+  --tp-nuget: #9b8cff;
+  --tp-rubygems: #ff6b6b;
   --tp-live: #00ff41;
   --tp-grid: rgb(255 255 255 / 0.04);
   --feed-surface: var(--tp-surface);
@@ -118,6 +128,26 @@ body {
 
 .tp-eco-pypi {
   color: var(--tp-pypi);
+}
+
+.tp-eco-go {
+  color: var(--tp-go);
+}
+
+.tp-eco-crates {
+  color: var(--tp-crates);
+}
+
+.tp-eco-maven {
+  color: var(--tp-maven);
+}
+
+.tp-eco-nuget {
+  color: var(--tp-nuget);
+}
+
+.tp-eco-rubygems {
+  color: var(--tp-rubygems);
 }
 
 .threat-feed-table {

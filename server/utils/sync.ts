@@ -20,11 +20,16 @@ export async function persistIncidents(
   const db = getDb()
   const normalized = items
     .filter((raw) => raw.externalId?.trim())
-    .map((raw) => ({
-      raw,
-      externalId: raw.externalId.trim(),
-      data: normalizeIncident(raw)
-    }))
+    .map((raw) => {
+      const data = normalizeIncident(raw)
+      if (!data) return null
+      return {
+        raw,
+        externalId: raw.externalId.trim(),
+        data
+      }
+    })
+    .filter((entry): entry is NonNullable<typeof entry> => entry !== null)
 
   if (normalized.length === 0) {
     return { inserted: 0, updated: 0, skipped: items.length }

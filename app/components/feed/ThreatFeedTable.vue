@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { FeedIncident } from '#shared/types/threat'
 import { packagePagePath } from '#shared/utils/package-path'
+import { ecosystemCssClass } from '~/utils/ecosystem'
 
 const props = defineProps<{
   items: FeedIncident[]
@@ -59,7 +60,7 @@ function severityTextClass(severity: string) {
 }
 
 function ecoBadgeClass(eco: string) {
-  return eco === 'npm' ? 'tp-eco-npm' : 'tp-eco-pypi'
+  return ecosystemCssClass(eco)
 }
 </script>
 

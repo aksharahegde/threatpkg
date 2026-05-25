@@ -9,5 +9,8 @@ describe('packagePagePath', () => {
     expect(packagePagePath('pypi', 'requests-toolbelt')).toBe(
       '/package/pypi/requests-toolbelt'
     )
+    expect(packagePagePath('go', 'github.com/foo/bar')).toBe(
+      '/package/go/github.com%2Ffoo%2Fbar'
+    )
   })
 })

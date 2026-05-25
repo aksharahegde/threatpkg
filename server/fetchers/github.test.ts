@@ -45,6 +45,26 @@ describe('fetchGithubAdvisories', () => {
     expect(incidents[0]?.indicators?.[0]?.indicatorType).toBe('ghsa')
   })
 
+  it('maps non-npm ecosystems', async () => {
+    restoreFetch()
+    restoreFetch = mockFetch(async () =>
+      Response.json(
+        [
+          {
+            ...ADVISORY,
+            ghsa_id: 'GHSA-go-test',
+            vulnerabilities: [
+              { package: { ecosystem: 'go', name: 'evil-go-mod' } }
+            ]
+          }
+        ],
+        { status: 200 }
+      )
+    )
+    const incidents = await fetchGithubAdvisories()
+    expect(incidents.some((i) => i.ecosystem === 'go')).toBe(true)
+  })
+
   it('skips withdrawn advisories', async () => {
     restoreFetch()
     restoreFetch = mockFetch(async () =>

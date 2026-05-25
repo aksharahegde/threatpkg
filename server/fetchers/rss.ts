@@ -11,8 +11,10 @@ import { getActiveRssFeeds, type RssFeedConfig } from './rss-feeds'
 
 const RSS_MAX_RESPONSE_BYTES = 2 * 1024 * 1024
 
+import { inferEcosystemFromText } from '../../shared/constants/ecosystems'
+
 const MALWARE_KEYWORDS =
-  /\b(malware|malicious|typosquat|supply[- ]chain|compromised|npm attack|pypi attack|dependency confusion)\b/i
+  /\b(malware|malicious|typosquat|supply[- ]chain|compromised|npm attack|pypi attack|dependency confusion|cargo|crates\.io|go module|maven|nuget|rubygems)\b/i
 
 interface RssItem {
   title: string
@@ -68,11 +70,8 @@ function itemToIncident(
   const packageName = extractPackageFromTitle(item.title)
   if (!packageName) return null
 
-  const textLower = text.toLowerCase()
-  const ecosystem =
-    textLower.includes('pypi') || textLower.includes('python package')
-      ? 'pypi'
-      : 'npm'
+  const ecosystem = inferEcosystemFromText(text)
+  if (!ecosystem) return null
 
   const riskScore = severityToRiskScore('high')
   const threatType = inferThreatType(text)

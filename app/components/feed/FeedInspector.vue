@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { remediationCommands } from '#shared/constants/ecosystems'
 import type { FeedIncident } from '#shared/types/threat'
 import { packagePagePath } from '#shared/utils/package-path'
+import { ecosystemCssClass } from '~/utils/ecosystem'
 import { renderMarkdown } from '~/utils/markdown'
 
 const props = defineProps<{
@@ -23,16 +25,7 @@ const severityClass = computed(() => {
 const remediation = computed(() => {
   const item = props.item
   if (!item) return []
-  if (item.ecosystem === 'pypi') {
-    return [
-      `$ pip uninstall ${item.packageName}`,
-      `$ pip install ${item.packageName}  # pin safe version`
-    ]
-  }
-  return [
-    `$ npm uninstall ${item.packageName}`,
-    `$ npm install ${item.packageName}@latest  # pin safe version`
-  ]
+  return remediationCommands(item.ecosystem, item.packageName)
 })
 </script>
 
@@ -70,7 +63,7 @@ const remediation = computed(() => {
             <p class="tp-label">Ecosystem</p>
             <p
               class="font-tp-mono mt-0.5 text-sm font-semibold uppercase"
-              :class="item.ecosystem === 'npm' ? 'tp-eco-npm' : 'tp-eco-pypi'"
+              :class="ecosystemCssClass(item.ecosystem)"
             >
               {{ item.ecosystem }}
             </p>

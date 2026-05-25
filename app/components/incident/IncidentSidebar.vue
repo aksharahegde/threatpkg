@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { FeedIncident } from '#shared/types/threat'
+import { ecosystemCssClass } from '~/utils/ecosystem'
 
 defineProps<{
   incident: FeedIncident
@@ -27,7 +28,7 @@ defineProps<{
         <p class="tp-label">Ecosystem</p>
         <p
           class="mt-1 text-sm uppercase"
-          :class="incident.ecosystem === 'npm' ? 'tp-eco-npm' : 'tp-eco-pypi'"
+          :class="ecosystemCssClass(incident.ecosystem)"
         >
           {{ incident.ecosystem }}
         </p>

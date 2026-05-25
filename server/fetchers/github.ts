@@ -1,4 +1,5 @@
 import type { FetcherIncident } from './types'
+import { mapGithubEcosystem } from '../../shared/constants/ecosystems'
 import {
   extractPackageFromTitle,
   inferSeverity,
@@ -22,20 +23,13 @@ interface GithubAdvisory {
   }[]
 }
 
-function mapEcosystem(ecosystem: string): 'npm' | 'pypi' | null {
-  const v = ecosystem.toLowerCase()
-  if (v === 'npm') return 'npm'
-  if (v === 'pip' || v === 'pypi') return 'pypi'
-  return null
-}
-
 function advisoryToIncident(advisory: GithubAdvisory): FetcherIncident | null {
   if (advisory.withdrawn_at) return null
 
   const vuln = advisory.vulnerabilities[0]
   if (!vuln) return null
 
-  const ecosystem = mapEcosystem(vuln.package.ecosystem)
+  const ecosystem = mapGithubEcosystem(vuln.package.ecosystem)
   if (!ecosystem) return null
 
   const packageName =

@@ -6,10 +6,10 @@ definePageMeta({ layout: 'dashboard' })
 useSeoMeta({
   title: 'Live threat feed',
   description:
-    'Open-source package threat intelligence feed for npm and PyPI: compromised packages, supply-chain attacks, and advisory IDs (CVE, GHSA, OSV).',
+    'Open-source package threat intelligence feed for npm, PyPI, Go, Rust, Java, .NET, and RubyGems: compromised packages, supply-chain attacks, and advisory IDs.',
   ogTitle: 'Live threat feed · ThreatPkg',
   ogDescription:
-    'Realtime open-source package threat intelligence feed for npm and PyPI: compromised packages, supply-chain attacks, and CVEs.'
+    'Realtime open-source package threat intelligence across major package ecosystems.'
 })
 
 const {
@@ -71,7 +71,7 @@ watch(
           Realtime package threat intelligence
         </h1>
         <p class="mt-1 text-xs leading-relaxed text-[var(--tp-text-muted)]">
-          Supply-chain incidents across npm and PyPI · refreshes every minute
+          Supply-chain incidents across major ecosystems · refreshes every minute
         </p>
       </div>
 

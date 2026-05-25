@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ECOSYSTEM_META } from '#shared/constants/ecosystems'
 import {
   THREAT_TYPES,
   SOURCES,
@@ -12,20 +13,25 @@ const emit = defineEmits<{
   refresh: []
 }>()
 
-const pillFilters = computed(() => [
-  { key: 'all', label: 'ALL', active: !filters.value.ecosystem && !filters.value.severity },
+type FilterPill =
+  | { key: 'all'; label: string; active: boolean }
+  | { key: 'critical'; label: string; active: boolean }
+  | { key: Ecosystem; label: string; active: boolean; eco: Ecosystem }
+
+const pillFilters = computed((): FilterPill[] => [
   {
-    key: 'npm',
-    label: 'NPM',
-    active: filters.value.ecosystem === 'npm',
-    eco: 'npm' as Ecosystem
+    key: 'all',
+    label: 'ALL',
+    active: !filters.value.ecosystem && !filters.value.severity
   },
-  {
-    key: 'pypi',
-    label: 'PYPI',
-    active: filters.value.ecosystem === 'pypi',
-    eco: 'pypi' as Ecosystem
-  },
+  ...ECOSYSTEM_META.map(
+    (meta): FilterPill => ({
+      key: meta.id,
+      label: meta.label,
+      active: filters.value.ecosystem === meta.id,
+      eco: meta.id
+    })
+  ),
   {
     key: 'critical',
     label: 'CRITICAL',
@@ -47,6 +53,12 @@ function setCritical() {
   filters.value.severity =
     filters.value.severity === 'critical' ? undefined : 'critical'
 }
+
+function onPillClick(pill: FilterPill) {
+  if (pill.key === 'all') setAll()
+  else if (pill.key === 'critical') setCritical()
+  else setEcosystem(pill.eco)
+}
 </script>
 
 <template>
@@ -65,13 +77,7 @@ function setCritical() {
         class="tp-pill rounded-sm px-2.5 py-1"
         :class="{ 'tp-pill--active': pill.active }"
         :data-testid="`feed-filter-${pill.key}`"
-        @click="
-          pill.key === 'all'
-            ? setAll()
-            : pill.key === 'critical'
-              ? setCritical()
-              : setEcosystem(pill.eco!)
-        "
+        @click="onPillClick(pill)"
       >
         {{ pill.label }}
       </button>

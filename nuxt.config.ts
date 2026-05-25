@@ -53,12 +53,12 @@ export default defineNuxtConfig({
         {
           name: 'description',
           content:
-            'Public realtime dashboard for open-source package threat intelligence: compromised npm and PyPI packages, supply-chain attacks, and ecosystem threats.'
+            'Public realtime dashboard for open-source package threat intelligence: compromised npm, PyPI, Go, Rust, Java, .NET, and Ruby packages, supply-chain attacks, and ecosystem threats.'
         },
         {
           name: 'keywords',
           content:
-            'npm security, PyPI security, supply chain attack, open source threats, CVE, malware packages, threat intelligence, package reputation'
+            'npm security, PyPI security, Go modules, Rust crates, Maven, NuGet, RubyGems, supply chain attack, CVE, malware packages, threat intelligence'
         },
         { name: 'author', content: 'ThreatPkg' },
         { name: 'robots', content: 'index, follow' },
@@ -99,7 +99,7 @@ export default defineNuxtConfig({
     url: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
     name: 'ThreatPkg',
     description:
-      'Public realtime dashboard for open-source package threat intelligence: compromised npm and PyPI packages, supply-chain attacks, and ecosystem threats.',
+      'Public realtime dashboard for open-source package threat intelligence across npm, PyPI, Go, Rust, Java, .NET, and RubyGems.',
     defaultLocale: 'en'
   },
 

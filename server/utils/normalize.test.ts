@@ -8,11 +8,20 @@ import {
 } from './normalize'
 
 describe('normalizeEcosystem', () => {
-  it('normalizes python aliases to pypi', () => {
+  it('normalizes known ecosystems and aliases', () => {
     expect(normalizeEcosystem('pypi')).toBe('pypi')
     expect(normalizeEcosystem('Python')).toBe('pypi')
     expect(normalizeEcosystem('npm')).toBe('npm')
-    expect(normalizeEcosystem('NuGet')).toBe('npm')
+    expect(normalizeEcosystem('NuGet')).toBe('nuget')
+    expect(normalizeEcosystem('crates.io')).toBe('crates')
+    expect(normalizeEcosystem('Go')).toBe('go')
+    expect(normalizeEcosystem('Maven')).toBe('maven')
+    expect(normalizeEcosystem('RubyGems')).toBe('rubygems')
+  })
+
+  it('returns null for unknown ecosystems', () => {
+    expect(normalizeEcosystem('debian')).toBeNull()
+    expect(normalizeEcosystem('')).toBeNull()
   })
 })
 
@@ -69,7 +78,18 @@ describe('normalizeIncident', () => {
       source: 'github',
       sourceUrl: 'https://example.com/advisory'
     })
-    expect(result.publishedAt).toEqual(publishedAt)
+    expect(result!.publishedAt).toEqual(publishedAt)
+  })
+
+  it('returns null for unknown ecosystems', () => {
+    const result = normalizeIncident({
+      packageName: 'pkg',
+      ecosystem: 'debian',
+      title: 't',
+      publishedAt: '2024-01-15T00:00:00.000Z',
+      source: 'osv'
+    })
+    expect(result).toBeNull()
   })
 
   it('parses ISO date strings', () => {
@@ -80,6 +100,6 @@ describe('normalizeIncident', () => {
       publishedAt: '2024-01-15T00:00:00.000Z',
       source: 'osv'
     })
-    expect(result.publishedAt.toISOString()).toBe('2024-01-15T00:00:00.000Z')
+    expect(result!.publishedAt.toISOString()).toBe('2024-01-15T00:00:00.000Z')
   })
 })

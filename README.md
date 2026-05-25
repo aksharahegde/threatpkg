@@ -1,12 +1,12 @@
 # ThreatPkg
 
-Public realtime dashboard for open-source package threat intelligence across **npm** and **PyPI** — compromised packages, supply-chain incidents, and advisory IDs (CVE, GHSA, OSV) in one searchable feed.
+Public realtime dashboard for open-source package threat intelligence across **npm**, **PyPI**, **Go**, **crates.io**, **Maven**, **NuGet**, and **RubyGems** — compromised packages, supply-chain incidents, and advisory IDs (CVE, GHSA, OSV) in one searchable feed.
 
 ## Features
 
 - **Live threat feed** — filter by ecosystem, severity, threat type, source, and time range; paginated with auto-refresh
 - **Three-column dashboard** — critical metrics, ecosystem distribution, trend chart, feed list, and inspector panel
-- **Package lookup** — search npm or PyPI packages from the navbar; resolves to the correct ecosystem route
+- **Package lookup** — search packages from the navbar; resolves to the correct ecosystem route
 - **Incident detail** — markdown advisories, timeline, indicators, affected versions, related incidents
 - **Package pages** — reputation score and incident history per package
 - **Light / dark theme** — system preference with manual toggle (persisted in local storage)
@@ -70,7 +70,7 @@ Scheduled sync runs every 30 minutes via Nitro (`sync-all` task) when the server
 
 | Source | Type | Notes |
 |--------|------|-------|
-| OSV | API | Recent npm / PyPI vulns and malware (modified-id lists) |
+| OSV | API | Recent vulns and malware per ecosystem (modified-id lists) |
 | GitHub Advisories | API | Optional `GITHUB_TOKEN` for higher rate limits |
 | Snyk, Phylum, JFrog | RSS | Security research blog feeds |
 
@@ -80,7 +80,7 @@ Scheduled sync runs every 30 minutes via Nitro (`sync-all` task) when the server
 |------|-------------|
 | `/` | Live threat feed |
 | `/incident/[id]` | Incident detail |
-| `/package/[ecosystem]/[name]` | Package reputation (`npm` or `pypi`) |
+| `/package/[ecosystem]/[name]` | Package reputation (`npm`, `pypi`, `go`, `crates`, `maven`, `nuget`, `rubygems`) |
 | `/package/[name]` | Redirects to ecosystem-scoped URL |
 | `/about` | About the project |
 
