@@ -3,13 +3,11 @@ import type { FeedIncident } from '#shared/types/threat'
 
 definePageMeta({ layout: 'dashboard' })
 
-useSeoMeta({
+usePageSeo({
   title: 'Live threat feed',
   description:
     'Open-source package threat intelligence feed for npm, PyPI, Go, Rust, Java, .NET, RubyGems, Laravel, and Flutter: compromised packages and supply-chain attacks.',
-  ogTitle: 'Live threat feed · ThreatPkg',
-  ogDescription:
-    'Realtime open-source package threat intelligence across major package ecosystems.'
+  ogTitle: 'Live threat feed'
 })
 
 const {
@@ -30,9 +28,9 @@ const selectedId = ref<string | null>(null)
 const selectedItem = computed<FeedIncident | null>(() => {
   if (!items.value.length) return null
   if (selectedId.value) {
-    return items.value.find((i) => i.id === selectedId.value) ?? items.value[0]
+    return items.value.find((i) => i.id === selectedId.value) ?? items.value[0] ?? null
   }
-  return items.value[0]
+  return items.value[0] ?? null
 })
 
 watch(

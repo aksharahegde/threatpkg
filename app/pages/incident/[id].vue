@@ -1,27 +1,68 @@
 <script setup lang="ts">
+import { defineArticle } from '@unhead/schema-org/vue'
+import { absoluteSiteUrl, incidentMetaDescription } from '#shared/utils/seo'
+import { packagePagePath } from '#shared/utils/package-path'
+
 definePageMeta({ layout: 'dashboard' })
 
 const route = useRoute()
 const id = computed(() => route.params.id as string)
 const { data: incident, pending, error } = useIncident(id)
 
+const site = useSiteConfig()
+
 const showLoading = computed(
   () => pending.value || (!incident.value && !error.value && import.meta.server)
 )
 
-useSeoMeta({
+const breadcrumbPrepend = [{ label: 'Threat feed', to: '/' }]
+
+const breadcrumbAppend = computed(() => {
+  const inc = incident.value
+  if (!inc) return []
+  return [
+    {
+      label: inc.packageName,
+      to: packagePagePath(inc.ecosystem, inc.packageName),
+      labelClass: 'font-mono text-[var(--tp-accent)]'
+    },
+    {
+      label: inc.title,
+      current: true
+    }
+  ]
+})
+
+usePageSeo({
   title: () => incident.value?.title ?? 'Incident',
   description: () =>
-    incident.value?.description?.slice(0, 160) ??
-    'Supply-chain incident detail from the ThreatPkg threat intelligence feed.',
-  ogTitle: () =>
-    incident.value?.title
-      ? `${incident.value.title} · ThreatPkg`
-      : 'Incident · ThreatPkg',
-  ogDescription: () =>
-    incident.value?.description?.slice(0, 160) ??
-    'Supply-chain incident detail from the ThreatPkg threat intelligence feed.'
+    incident.value
+      ? incidentMetaDescription(incident.value)
+      : 'Supply-chain incident detail from the ThreatPkg threat intelligence feed.'
 })
+
+useSchemaOrg(
+  computed(() => {
+    const inc = incident.value
+    if (!inc) return []
+    const pageUrl = absoluteSiteUrl(`/incident/${inc.id}`, site.url)
+    return [
+      defineArticle({
+        '@type': 'NewsArticle',
+        headline: inc.title,
+        datePublished: inc.publishedAt,
+        dateModified: inc.createdAt,
+        description: incidentMetaDescription(inc),
+        url: pageUrl,
+        author: {
+          '@type': 'Organization',
+          name: site.name,
+          url: site.url
+        }
+      })
+    ]
+  })
+)
 </script>
 
 <template>
@@ -31,18 +72,11 @@ useSeoMeta({
       subtitle="Supply-chain threat intelligence"
     />
 
-    <nav
-      class="flex items-center gap-2 border-b border-[var(--tp-border)] bg-[var(--tp-surface-raised)] px-4 py-2 text-sm"
-      aria-label="Breadcrumb"
-    >
-      <NuxtLink
-        to="/"
-        class="tp-pill inline-flex items-center gap-1 border-0 px-0 py-0 hover:text-[var(--tp-accent)]"
-      >
-        <UIcon name="i-lucide-arrow-left" class="size-3.5" />
-        Threat feed
-      </NuxtLink>
-    </nav>
+    <LayoutPageBreadcrumb
+      :path="`/incident/${id}`"
+      :prepend="breadcrumbPrepend"
+      :append="breadcrumbAppend"
+    />
 
     <div
       v-if="showLoading"

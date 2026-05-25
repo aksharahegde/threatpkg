@@ -31,6 +31,13 @@ export default defineNuxtConfig({
 
   modules: ['@nuxt/ui', '@vueuse/nuxt', '@nuxtjs/seo'],
 
+  /** @see https://nuxtseo.com/docs/nuxt-seo/getting-started/installation */
+  seo: {
+    metaDataFiles: true,
+    automaticOgAndTwitterTags: true,
+    fallbackTitle: true
+  },
+
   css: ['~/assets/css/main.css'],
 
   colorMode: {
@@ -45,29 +52,18 @@ export default defineNuxtConfig({
       htmlAttrs: {
         lang: 'en'
       },
-      title: 'ThreatPkg',
-      titleTemplate: '%s · ThreatPkg',
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1',
       meta: [
-        {
-          name: 'description',
-          content:
-            'Public realtime dashboard for open-source package threat intelligence: compromised npm, PyPI, Go, Rust, Java, .NET, Ruby, PHP/Laravel, and Flutter packages.'
-        },
         {
           name: 'keywords',
           content:
             'npm security, PyPI, Laravel, Composer, Flutter, pub.dev, Go, Rust, Maven, NuGet, RubyGems, supply chain attack, CVE, malware packages'
         },
         { name: 'author', content: 'ThreatPkg' },
-        { name: 'robots', content: 'index, follow' },
         { name: 'theme-color', content: '#0a0a0c', media: '(prefers-color-scheme: dark)' },
         { name: 'theme-color', content: '#fafbfc', media: '(prefers-color-scheme: light)' },
-        { name: 'application-name', content: 'ThreatPkg' },
-        { property: 'og:type', content: 'website' },
-        { property: 'og:site_name', content: 'ThreatPkg' },
-        { name: 'twitter:card', content: 'summary_large_image' }
+        { name: 'application-name', content: 'ThreatPkg' }
       ],
       link: [
         { rel: 'icon', type: 'image/png', href: '/icon.png' },
@@ -100,9 +96,26 @@ export default defineNuxtConfig({
     name: 'ThreatPkg',
     description:
       'Public realtime dashboard for open-source package threat intelligence across npm, PyPI, Go, Rust, Java, .NET, RubyGems, Packagist, and Pub.',
-    defaultLocale: 'en'
+    defaultLocale: 'en',
+    trailingSlash: false
   },
 
-  sitemap: { enabled: true },
+  sitemap: {
+    enabled: true,
+    cacheMaxAgeSeconds: 3600,
+    sources: ['/__sitemap__/urls']
+  },
+
+  schemaOrg: {
+    identity: {
+      type: 'Organization',
+      name: 'ThreatPkg',
+      url: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+      logo: '/icon.png',
+      description:
+        'Public realtime dashboard for open-source package threat intelligence across npm, PyPI, Go, Rust, Java, .NET, RubyGems, Packagist, and Pub.'
+    }
+  },
+
   robots: { enabled: true }
 })

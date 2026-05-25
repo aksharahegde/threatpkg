@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { PackageDetail } from '#shared/types/threat'
 import { ECOSYSTEMS } from '#shared/types/threat'
+import { packageMetaDescription } from '#shared/utils/seo'
+import { packagePagePath } from '#shared/utils/package-path'
+import { getEcosystemMeta } from '#shared/constants/ecosystems'
 
 definePageMeta({ layout: 'dashboard' })
 
@@ -17,19 +20,47 @@ const { data, pending, error } = await useFetch<PackageDetail>(
     `/api/packages/${ecosystem.value}/${encodeURIComponent(name.value)}`
 )
 
-useSeoMeta({
+const ecoLabel = computed(
+  () => getEcosystemMeta(ecosystem.value)?.label ?? ecosystem.value
+)
+
+const packagePath = computed(() => packagePagePath(ecosystem.value, name.value))
+
+const breadcrumbPrepend = [{ label: 'Threat feed', to: '/' }]
+
+const breadcrumbAppend = computed(() => [
+  {
+    label: name.value,
+    current: true,
+    labelClass: 'font-mono text-[var(--tp-text)]'
+  }
+])
+
+usePageSeo({
   title: () => name.value,
+  ogTitle: () => `${name.value} (${ecoLabel.value})`,
   description: () =>
-    `Package reputation and supply-chain incident history for ${name.value} (${ecosystem.value}) on ThreatPkg.`,
-  ogTitle: () => `${name.value} (${ecosystem.value}) · ThreatPkg`,
-  ogDescription: () =>
-    `Package reputation and supply-chain incident history for ${name.value} (${ecosystem.value}) on ThreatPkg.`
+    data.value
+      ? packageMetaDescription({
+          packageName: name.value,
+          ecosystem: ecosystem.value,
+          incidentCount: data.value.reputation.incidentCount,
+          riskScore: data.value.reputation.riskScore
+        })
+      : `Package reputation and supply-chain incident history for ${name.value} (${ecoLabel.value}) on ThreatPkg.`
 })
 </script>
 
 <template>
-  <div>
+  <div class="flex min-h-0 flex-1 flex-col bg-[var(--tp-surface)]">
     <LayoutAppHeader title="Package reputation" />
+
+    <LayoutPageBreadcrumb
+      :path="packagePath"
+      :prepend="breadcrumbPrepend"
+      :append="breadcrumbAppend"
+    />
+
     <div v-if="pending" class="px-4 py-8 text-neutral-500">Loading…</div>
     <div v-else-if="error || !data" class="px-4 py-8 text-red-600">
       Package not found.
