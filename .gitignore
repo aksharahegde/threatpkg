@@ -1,0 +1,71 @@
+# Nuxt / Nitro
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+
+# Dependencies
+node_modules
+
+# Bun
+bun-debug.log*
+
+# TypeScript
+*.tsbuildinfo
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Testing / coverage
+coverage
+.nyc_output
+
+# Lint / format caches
+.eslintcache
+.stylelintcache
+
+# IDE / editors
+.DS_Store
+.fleet
+.idea
+*.swp
+*.swo
+*~
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+
+# OS
+Thumbs.db
+
+# Deploy
+.vercel
+.netlify
+
+# Local databases / dumps
+*.sqlite
+*.sqlite3
+*.db
+dump.rdb
+
+# Agent / local tooling
+.agents/
+.claude/
+.playwright-mcp/
+skills-lock.json
+
+# Design screenshots (local only)
+feed-redesign*.png
+incident-detail-*.png

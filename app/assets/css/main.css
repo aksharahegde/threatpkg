@@ -1,0 +1,267 @@
+@import 'tailwindcss';
+@import '@nuxt/ui';
+
+/* Sci-fi theme tokens — light (default) */
+:root {
+  --feed-row-height: 3.75rem;
+  --tp-bg: #f0f1f4;
+  --tp-surface: #fafbfc;
+  --tp-surface-raised: #ffffff;
+  --tp-surface-inset: #eef0f3;
+  --tp-border: #d4d8e0;
+  --tp-border-strong: #b8bec9;
+  --tp-text: #0c0e12;
+  --tp-text-muted: #5c6470;
+  --tp-text-dim: #8a919c;
+  --tp-accent: #e86a00;
+  --tp-accent-muted: rgb(232 106 0 / 0.12);
+  --tp-npm: #d63d6a;
+  --tp-pypi: #0077cc;
+  --tp-live: #0d9f4f;
+  --tp-grid: rgb(12 14 18 / 0.04);
+  --feed-surface: var(--tp-surface);
+  --feed-surface-raised: var(--tp-surface-raised);
+  --feed-border: var(--tp-border);
+  --feed-rail-critical: #dc2626;
+  --feed-rail-high: var(--tp-accent);
+  --feed-rail-medium: #ca8a04;
+  --feed-rail-low: #64748b;
+  --tp-glow: rgb(232 106 0 / 0.35);
+  --tp-scanline: rgb(0 0 0 / 0.02);
+  --tp-font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --tp-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.dark {
+  --tp-bg: #000000;
+  --tp-surface: #0a0a0c;
+  --tp-surface-raised: #121214;
+  --tp-surface-inset: #08080a;
+  --tp-border: #2a2a30;
+  --tp-border-strong: #3d3d45;
+  --tp-text: #f4f4f5;
+  --tp-text-muted: #a1a1aa;
+  --tp-text-dim: #71717a;
+  --tp-accent: #ff8c00;
+  --tp-accent-muted: rgb(255 140 0 / 0.15);
+  --tp-npm: #ff6b8a;
+  --tp-pypi: #00a3ff;
+  --tp-live: #00ff41;
+  --tp-grid: rgb(255 255 255 / 0.04);
+  --feed-surface: var(--tp-surface);
+  --feed-surface-raised: var(--tp-surface-raised);
+  --feed-border: var(--tp-border);
+  --feed-rail-critical: #ff4b4b;
+  --feed-rail-high: #ff8c00;
+  --feed-rail-medium: #facc15;
+  --feed-rail-low: #64748b;
+  --tp-glow: rgb(255 140 0 / 0.45);
+  --tp-scanline: rgb(255 255 255 / 0.02);
+}
+
+html {
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+body {
+  font-family: var(--tp-font-display);
+  background-color: var(--tp-bg);
+  color: var(--tp-text);
+}
+
+.font-tp-mono {
+  font-family: var(--tp-font-mono);
+}
+
+.tp-label {
+  font-family: var(--tp-font-mono);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tp-text-dim);
+}
+
+.tp-panel {
+  border: 1px solid var(--tp-border);
+  background: var(--tp-surface-raised);
+}
+
+.tp-pill {
+  font-family: var(--tp-font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid var(--tp-border);
+  color: var(--tp-text-muted);
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.tp-pill:hover:not(:disabled) {
+  border-color: var(--tp-border-strong);
+  color: var(--tp-text);
+}
+
+.tp-pill--active {
+  border-color: var(--tp-accent);
+  color: var(--tp-accent);
+  background: var(--tp-accent-muted);
+}
+
+.tp-eco-npm {
+  color: var(--tp-npm);
+}
+
+.tp-eco-pypi {
+  color: var(--tp-pypi);
+}
+
+.threat-feed-table {
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+.feed-row-enter {
+  animation: feed-row-in 0.35s ease-out both;
+}
+
+@keyframes feed-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.feed-scanlines {
+  background-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 2px,
+    var(--tp-scanline) 2px,
+    var(--tp-scanline) 3px
+  );
+  background-size: 100% 3px;
+}
+
+.tp-live-dot {
+  box-shadow: 0 0 8px var(--tp-live);
+}
+
+.tp-glow-accent {
+  box-shadow: 0 0 12px var(--tp-glow);
+}
+
+.incident-prose :where(p, ul, ol, pre, blockquote, table) {
+  margin-top: 0.75em;
+  margin-bottom: 0.75em;
+}
+
+.incident-prose :where(p, ul, ol, li, td, th) {
+  color: var(--tp-text-muted);
+}
+
+.incident-prose :where(h1, h2, h3, h4) {
+  margin-top: 1.25em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+  color: var(--tp-text);
+}
+
+.incident-prose :where(h2) {
+  font-size: 0.9375rem;
+}
+
+.incident-prose :where(h3) {
+  font-size: 0.875rem;
+}
+
+.incident-prose :where(a) {
+  color: var(--tp-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.incident-prose :where(code) {
+  border-radius: 0.25rem;
+  background: var(--tp-surface-inset);
+  padding: 0.125rem 0.375rem;
+  font-family: var(--tp-font-mono);
+  font-size: 0.8125em;
+  color: var(--tp-text);
+}
+
+.incident-prose :where(pre) {
+  overflow-x: auto;
+  border-radius: 0.375rem;
+  border: 1px solid var(--feed-border);
+  background: var(--tp-surface-inset);
+  padding: 0.75rem 1rem;
+}
+
+.incident-prose :where(pre code) {
+  background: transparent;
+  padding: 0;
+}
+
+.incident-prose :where(hr) {
+  margin: 1.25em 0;
+  border-color: var(--feed-border);
+}
+
+.incident-prose :where(ul, ol) {
+  padding-left: 1.25rem;
+}
+
+.incident-prose :where(li + li) {
+  margin-top: 0.25em;
+}
+
+.incident-prose :where(:first-child) {
+  margin-top: 0;
+}
+
+.incident-prose :where(:last-child) {
+  margin-bottom: 0;
+}
+
+.inspector-prose {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.inspector-prose :where(p, ul, ol, pre, blockquote, table) {
+  margin-top: 0.35em;
+  margin-bottom: 0.35em;
+}
+
+.inspector-prose :where(pre) {
+  overflow-x: hidden;
+  white-space: pre-wrap;
+  max-width: 100%;
+  padding: 0.5rem 0.65rem;
+}
+
+.inspector-prose :where(code) {
+  word-break: break-word;
+}
+
+.inspector-prose :where(table, img) {
+  max-width: 100%;
+}
+
+.inspector-prose :where(:first-child) {
+  margin-top: 0;
+}
+
+.inspector-prose :where(:last-child) {
+  margin-bottom: 0;
+}
