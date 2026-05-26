@@ -42,4 +42,20 @@ describe('packageMetaDescription', () => {
     expect(description).toContain('PYPI')
     expect(description).toContain('2')
   })
+
+  it('includes latest incident when provided', () => {
+    const description = packageMetaDescription({
+      packageName: 'evil-pkg',
+      ecosystem: 'npm',
+      incidentCount: 1,
+      riskScore: 95,
+      latestIncident: {
+        title: 'Malware in postinstall',
+        severity: 'critical'
+      }
+    })
+    expect(description).toContain('CRITICAL')
+    expect(description).toContain('Malware in postinstall')
+    expect(description.length).toBeLessThanOrEqual(160)
+  })
 })

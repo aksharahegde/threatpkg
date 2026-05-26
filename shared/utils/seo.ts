@@ -33,9 +33,15 @@ export function packageMetaDescription(input: {
   ecosystem: Ecosystem | string
   incidentCount: number
   riskScore: number
+  latestIncident?: {
+    title: string
+    severity: string
+  }
 }): string {
   const ecoLabel = getEcosystemMeta(input.ecosystem)?.label ?? input.ecosystem
-  return trimDescription(
-    `ThreatPkg reputation for ${input.packageName} on ${ecoLabel}: ${input.incidentCount} recorded supply-chain incident(s), peak risk score ${input.riskScore}. Review history and related advisories.`
-  )
+  const base = `${input.packageName} (${ecoLabel}): ${input.incidentCount} incident(s), risk ${input.riskScore}.`
+  const latest = input.latestIncident
+    ? ` Latest: ${input.latestIncident.severity.toUpperCase()} — ${input.latestIncident.title}.`
+    : ' Review supply-chain history and related advisories on ThreatPkg.'
+  return trimDescription(`${base}${latest}`)
 }
