@@ -73,7 +73,6 @@ useSchemaOrg(
     />
 
     <LayoutPageBreadcrumb
-      :path="`/incident/${id}`"
       :prepend="breadcrumbPrepend"
       :append="breadcrumbAppend"
     />

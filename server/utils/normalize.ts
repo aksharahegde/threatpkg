@@ -1,5 +1,5 @@
 import type { Ecosystem, Severity, ThreatType, Source } from '../../shared/types/threat'
-import { severityFromScore } from '../../shared/types/threat'
+import { ECOSYSTEMS, severityFromScore } from '../../shared/types/threat'
 import { mapOsvEcosystem } from '../../shared/constants/ecosystems'
 
 export interface RawIncident {
@@ -15,7 +15,11 @@ export interface RawIncident {
 }
 
 export function normalizeEcosystem(value: string): Ecosystem | null {
-  return mapOsvEcosystem(value)
+  const trimmed = value.trim()
+  if ((ECOSYSTEMS as readonly string[]).includes(trimmed)) {
+    return trimmed as Ecosystem
+  }
+  return mapOsvEcosystem(trimmed)
 }
 
 export function normalizeSeverity(value: string | undefined, riskScore?: number): Severity {

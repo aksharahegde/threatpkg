@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { defineBreadcrumb, useSchemaOrg } from '#imports'
+import { absoluteSiteUrl } from '#shared/utils/seo'
 import type { MaybeRefOrGetter } from 'vue'
+import { toValue, computed } from 'vue'
 
 export interface PageBreadcrumbItem {
   label: string
@@ -9,18 +12,33 @@ export interface PageBreadcrumbItem {
 }
 
 const props = defineProps<{
-  path?: MaybeRefOrGetter<string>
+  items?: MaybeRefOrGetter<PageBreadcrumbItem[]>
   prepend?: MaybeRefOrGetter<PageBreadcrumbItem[]>
   append?: MaybeRefOrGetter<PageBreadcrumbItem[]>
 }>()
 
-const items = useBreadcrumbItems({
-  path: props.path,
-  prepend: props.prepend,
-  append: props.append,
-  hideRoot: true,
-  schemaOrg: true
+const items = computed(() => {
+  if (props.items) return toValue(props.items) ?? []
+  return [
+    ...(toValue(props.prepend) ?? []),
+    ...(toValue(props.append) ?? [])
+  ]
 })
+
+const site = useSiteConfig()
+
+useSchemaOrg([
+  defineBreadcrumb({
+    itemListElement: computed(() =>
+      items.value
+        .filter((item): item is PageBreadcrumbItem & { to: string } => !!item.to)
+        .map((item) => ({
+          name: item.label,
+          item: absoluteSiteUrl(item.to, site.url)
+        }))
+    )
+  })
+])
 </script>
 
 <template>

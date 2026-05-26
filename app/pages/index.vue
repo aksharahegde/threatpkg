@@ -1,7 +1,35 @@
 <script setup lang="ts">
-import type { FeedIncident } from '#shared/types/threat'
+import { parseFeedQuery } from '#shared/utils/parse-feed-query'
+import type { FeedIncident, FeedQuery } from '#shared/types/threat'
 
 definePageMeta({ layout: 'dashboard' })
+
+const route = useRoute()
+
+function initialFeedQuery(): Partial<FeedQuery> {
+  const parsed = parseFeedQuery(route.query as Record<string, unknown>)
+  return {
+    ecosystem: parsed.ecosystem,
+    severity: parsed.severity,
+    threatType: parsed.threatType,
+    source: parsed.source,
+    range: parsed.range ?? '7d',
+    q: parsed.q ?? '',
+    sort: parsed.sort ?? 'published'
+  }
+}
+
+function applyRouteQueryToFilters(filters: FeedQuery) {
+  const parsed = parseFeedQuery(route.query as Record<string, unknown>)
+  filters.ecosystem = parsed.ecosystem
+  filters.severity = parsed.severity
+  filters.threatType = parsed.threatType
+  filters.source = parsed.source
+  filters.range = parsed.range ?? '7d'
+  filters.q = parsed.q ?? ''
+  filters.sort = parsed.sort ?? 'published'
+  filters.cursor = undefined
+}
 
 usePageSeo({
   title: 'Live threat feed',
@@ -21,7 +49,13 @@ const {
   setFilter,
   nextCursor,
   loadMore
-} = useThreatFeed({ range: '7d' })
+} = useThreatFeed(initialFeedQuery())
+
+watch(
+  () => route.query,
+  () => applyRouteQueryToFilters(filters),
+  { deep: true }
+)
 
 const selectedId = ref<string | null>(null)
 

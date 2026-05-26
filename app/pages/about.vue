@@ -6,7 +6,7 @@ definePageMeta({ layout: 'dashboard' })
 
 const ecosystemHubs = ECOSYSTEM_META.map((eco) => ({
   ...eco,
-  feedFilter: `?ecosystem=${eco.id}`
+  feedTo: { path: '/', query: { ecosystem: eco.id } } as const
 }))
 
 usePageSeo({
@@ -98,7 +98,7 @@ const dataSources = [
             <div class="flex flex-wrap items-center gap-2">
               <span :class="['tp-label', eco.cssClass]">{{ eco.label }}</span>
               <NuxtLink
-                :to="eco.feedFilter"
+                :to="eco.feedTo"
                 class="text-sm text-[var(--tp-accent)] hover:opacity-80"
                 :data-testid="`about-ecosystem-${eco.id}-feed`"
               >

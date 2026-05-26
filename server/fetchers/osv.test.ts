@@ -55,4 +55,27 @@ describe('fetchOsvIncidents', () => {
       threatType: 'malware'
     })
   })
+
+  it('skips recent non-malware CSV rows and still ingests MAL-* ids', async () => {
+    const recent = new Date(NOW - 60_000).toISOString()
+    const mixedCsv = `${recent},CVE-2024-9999\n${recent},MAL-2024-0001\n`
+    restoreFetch()
+    restoreFetch = mockFetch(async (url: string) => {
+      const u = String(url)
+      if (u.endsWith('modified_id.csv')) {
+        return new Response(mixedCsv, { status: 200 })
+      }
+      if (u.includes('/vulns/MAL-')) {
+        return Response.json(MALWARE_VULN, { status: 200 })
+      }
+      if (u.includes('/vulns/CVE-')) {
+        return Response.json(BENIGN_VULN, { status: 200 })
+      }
+      return new Response('not found', { status: 404 })
+    })
+
+    const incidents = await fetchOsvIncidents()
+    expect(incidents).toHaveLength(1)
+    expect(incidents[0]?.externalId).toBe('MAL-2024-0001')
+  })
 })

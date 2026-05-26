@@ -36,6 +36,7 @@ function isMalwareRecord(vuln: OsvVuln): boolean {
   return Array.isArray(origins) && origins.length > 0
 }
 
+/** Collect recent malicious-package IDs (MAL-*) from an OSV modified CSV. */
 function parseModifiedCsv(text: string, cutoff: Date): string[] {
   const ids: string[] = []
   for (const line of text.split('\n')) {
@@ -47,6 +48,8 @@ function parseModifiedCsv(text: string, cutoff: Date): string[] {
     const id = trimmed.slice(comma + 1).trim()
     if (Number.isNaN(modifiedAt.getTime()) || !id) continue
     if (modifiedAt < cutoff) break
+    // Recent rows are often CVE/GHSA updates; skip them and keep scanning for MAL-*.
+    if (!id.startsWith('MAL-')) continue
     ids.push(id)
     if (ids.length >= MAX_IDS_PER_ECOSYSTEM) break
   }

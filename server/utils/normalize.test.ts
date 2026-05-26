@@ -14,6 +14,7 @@ describe('normalizeEcosystem', () => {
     expect(normalizeEcosystem('npm')).toBe('npm')
     expect(normalizeEcosystem('NuGet')).toBe('nuget')
     expect(normalizeEcosystem('crates.io')).toBe('crates')
+    expect(normalizeEcosystem('crates')).toBe('crates')
     expect(normalizeEcosystem('Go')).toBe('go')
     expect(normalizeEcosystem('Maven')).toBe('maven')
     expect(normalizeEcosystem('RubyGems')).toBe('rubygems')

@@ -2,7 +2,6 @@
 import type { PackageDetail } from '#shared/types/threat'
 import { ECOSYSTEMS } from '#shared/types/threat'
 import { packageMetaDescription } from '#shared/utils/seo'
-import { packagePagePath } from '#shared/utils/package-path'
 import { getEcosystemMeta } from '#shared/constants/ecosystems'
 
 definePageMeta({ layout: 'dashboard' })
@@ -23,8 +22,6 @@ const { data, pending, error } = await useFetch<PackageDetail>(
 const ecoLabel = computed(
   () => getEcosystemMeta(ecosystem.value)?.label ?? ecosystem.value
 )
-
-const packagePath = computed(() => packagePagePath(ecosystem.value, name.value))
 
 const breadcrumbPrepend = [{ label: 'Threat feed', to: '/' }]
 
@@ -56,7 +53,6 @@ usePageSeo({
     <LayoutAppHeader title="Package reputation" />
 
     <LayoutPageBreadcrumb
-      :path="packagePath"
       :prepend="breadcrumbPrepend"
       :append="breadcrumbAppend"
     />

@@ -61,7 +61,7 @@ const distribution = computed(() => {
     >
       No incidents in range
     </div>
-    <div v-else class="mt-4 max-h-56 space-y-3 overflow-y-auto pr-1">
+    <div v-else class="mt-4 space-y-2">
       <div v-for="row in distribution" :key="row.id">
         <div class="mb-1 flex justify-between font-tp-mono text-[10px]">
           <span :class="row.cssClass">{{ row.label }}</span>
