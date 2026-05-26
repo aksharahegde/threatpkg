@@ -1,53 +1,67 @@
 import { marked } from 'marked'
-import DOMPurify from 'isomorphic-dompurify'
+import sanitizeHtml from 'sanitize-html'
 
 marked.setOptions({ gfm: true, breaks: true })
 
-const SANITIZE_OPTIONS: Parameters<typeof DOMPurify.sanitize>[1] = {
-  USE_PROFILES: { html: true },
-  ALLOW_DATA_ATTR: false,
-  ALLOW_UNKNOWN_PROTOCOLS: false,
-  FORBID_TAGS: ['style']
-}
+const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
+  allowedTags: [
+    ...sanitizeHtml.defaults.allowedTags,
+    'img',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'pre',
+    'code',
+    'hr',
+    'table',
+    'thead',
+    'tbody',
+    'tr',
+    'th',
+    'td'
+  ],
+  allowedAttributes: {
+    ...sanitizeHtml.defaults.allowedAttributes,
+    a: ['href', 'name', 'target', 'rel'],
+    img: ['src', 'alt', 'title', 'width', 'height']
+  },
+  allowedSchemes: ['http', 'https', 'mailto'],
+  disallowedTagsMode: 'discard',
+  transformTags: {
+    a: (_tagName, attribs) => {
+      const href = attribs.href?.trim() ?? ''
+      const lower = href.toLowerCase()
+      if (lower.startsWith('javascript:') || lower.startsWith('data:')) {
+        delete attribs.href
+        delete attribs.target
+        return { tagName: 'a', attribs }
+      }
 
-let linkHookRegistered = false
+      const isExternal = /^https?:\/\//i.test(href)
+      const rel = (attribs.rel ?? '').split(/\s+/).filter(Boolean)
+      const hasNoopener = rel.includes('noopener')
 
-function registerLinkRelHook() {
-  if (linkHookRegistered) return
-  linkHookRegistered = true
+      if (isExternal && !hasNoopener) {
+        attribs.rel = 'noopener noreferrer'
+      }
 
-  DOMPurify.addHook('afterSanitizeAttributes', (node) => {
-    if (node.tagName !== 'A') return
+      if (attribs.target === '_blank' && !hasNoopener && !attribs.rel) {
+        attribs.rel = 'noopener noreferrer'
+      }
 
-    const href = node.getAttribute('href')?.trim() ?? ''
-    const lower = href.toLowerCase()
-    if (lower.startsWith('javascript:') || lower.startsWith('data:')) {
-      node.removeAttribute('href')
-      node.removeAttribute('target')
-      return
+      if (!isExternal && attribs.target) {
+        delete attribs.target
+      }
+
+      return { tagName: 'a', attribs }
     }
-
-    const rel = (node.getAttribute('rel') ?? '').split(/\s+/).filter(Boolean)
-    const hasNoopener = rel.includes('noopener')
-    const isExternal = /^https?:\/\//i.test(href)
-    const target = node.getAttribute('target')
-
-    if (isExternal && !hasNoopener) {
-      node.setAttribute('rel', 'noopener noreferrer')
-    }
-
-    if (target === '_blank' && !hasNoopener && !node.getAttribute('rel')) {
-      node.setAttribute('rel', 'noopener noreferrer')
-    }
-
-    if (!isExternal && target) {
-      node.removeAttribute('target')
-    }
-  })
+  }
 }
 
 export function renderMarkdown(source: string): string {
-  registerLinkRelHook()
   const html = marked.parse(source, { async: false }) as string
-  return DOMPurify.sanitize(html, SANITIZE_OPTIONS)
+  return sanitizeHtml(html, SANITIZE_OPTIONS)
 }

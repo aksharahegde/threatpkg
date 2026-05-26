@@ -47,6 +47,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `NUXT_PUBLIC_SITE_URL` | No | Canonical site URL for SEO / OG (default `http://localhost:3000`) |
 | `GITHUB_TOKEN` | No | Raises GitHub Advisory API rate limits during sync |
 | `SYNC_SECRET` | For manual sync | Required to enable `POST /api/sync` (send as `x-sync-secret` header) |
+| `CRON_SECRET` | For Vercel Cron | Set on Vercel; authorizes `GET /api/cron/sync` (Bearer token sent automatically) |
 | `REDIS_URL` | No | Reserved for future use |
 | `OPENAI_API_KEY` | No | Reserved for AI summary enrichment |
 
@@ -64,7 +65,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `bun run db:seed` | Seed source registry |
 | `bun run db:sync` | Ingest incidents from OSV, GitHub Advisories, and RSS |
 
-Scheduled sync runs every 30 minutes via Nitro (`sync-all` task) when the server is up.
+Scheduled ingest: locally every 30 minutes via Nitro `sync-all` task; on Vercel via [Cron Jobs](https://vercel.com/docs/cron-jobs) (`GET /api/cron/sync`, daily at 06:00 UTC on Hobby — use `*/30 * * * *` in `vercel.json` on Pro).
 
 ## Data sources
 
@@ -94,6 +95,7 @@ Scheduled sync runs every 30 minutes via Nitro (`sync-all` task) when the server
 | `GET /api/packages/resolve/:name` | Resolve package name to primary ecosystem |
 | `GET /api/sources` | Sync freshness / source status |
 | `POST /api/sync` | Trigger ingest (disabled until `SYNC_SECRET` is set; header `x-sync-secret` required) |
+| `GET /api/cron/sync` | Cron ingest (Vercel sends `Authorization: Bearer <CRON_SECRET>`; `SYNC_SECRET` also accepted) |
 
 Query parameters for `/api/feed`: `ecosystem`, `severity`, `threatType`, `source`, `range` (`24h` \| `7d` \| `30d`), `q`, `sort` (`published` \| `risk`), `cursor`, `limit`.
 

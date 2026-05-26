@@ -20,12 +20,16 @@ export default defineNuxtConfig({
       '*/30 * * * *': ['sync-all']
     }
   },
+
+  routeRules: {
+    '/api/cron/sync': { maxDuration: 300 }
+  },
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
   vite: {
     optimizeDeps: {
-      include: ['isomorphic-dompurify', 'marked']
+      include: ['marked', 'sanitize-html']
     }
   },
 
