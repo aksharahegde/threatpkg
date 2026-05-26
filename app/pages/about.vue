@@ -29,24 +29,6 @@ const dataSources = [
     name: 'GitHub Advisory Database',
     description: 'Security advisories published through GitHub.',
     url: 'https://github.com/advisories'
-  },
-  {
-    id: 'snyk',
-    name: 'Snyk Blog',
-    description: 'Security research and supply-chain reporting.',
-    url: 'https://snyk.io/blog/'
-  },
-  {
-    id: 'phylum',
-    name: 'Phylum',
-    description: 'Package ecosystem threat research and analysis.',
-    url: 'https://phylum.io/'
-  },
-  {
-    id: 'jfrog',
-    name: 'JFrog Blog',
-    description: 'Security and supply-chain posts from the JFrog blog RSS feed.',
-    url: 'https://jfrog.com/blog/'
   }
 ] as const
 </script>
@@ -161,7 +143,7 @@ const dataSources = [
       >
         <h2 id="about-sources-heading" class="tp-label">Data sources & credits</h2>
         <p class="mt-3 text-sm leading-relaxed text-[var(--tp-text-muted)]">
-          ThreatPkg aggregates public advisories and research feeds. Advisory
+          ThreatPkg aggregates public advisories. Advisory
           text, identifiers, and severity ratings belong to the original
           publishers. Links below point to each provider.
         </p>

@@ -1,15 +1,16 @@
 import { fetchGithubAdvisories } from '../fetchers/github'
 import { fetchOsvIncidents } from '../fetchers/osv'
-import { fetchRssFeeds } from '../fetchers/rss'
 import { dedupeIncidents } from './dedupe'
 import {
   persistIncidents,
+  removeRetiredSourceIncidents,
   removeUnsyncedIncidents,
   touchSourceSync
 } from './sync'
 
 export type SyncAllResult = {
-  fetched: { osv: number; github: number; rss: number }
+  fetched: { osv: number; github: number }
+  removedRetired: number
   removedLegacy: number
   inserted: number
   updated: number
@@ -24,26 +25,24 @@ export async function runSyncAll(): Promise<SyncAllResult> {
     })
   }
 
-  const [osv, github, rss] = await Promise.all([
+  const [osv, github] = await Promise.all([
     fetchOsvIncidents(),
-    fetchGithubAdvisories(),
-    fetchRssFeeds()
+    fetchGithubAdvisories()
   ])
 
-  const merged = dedupeIncidents([...osv, ...github, ...rss])
+  const merged = dedupeIncidents([...osv, ...github])
+  const removedRetired = await removeRetiredSourceIncidents()
   const removedLegacy = await removeUnsyncedIncidents()
   const result = await persistIncidents(merged)
 
   await Promise.all([
     touchSourceSync('OSV'),
-    touchSourceSync('GitHub Advisories'),
-    touchSourceSync('Snyk'),
-    touchSourceSync('Phylum'),
-    touchSourceSync('JFrog Blog')
+    touchSourceSync('GitHub Advisories')
   ])
 
   return {
-    fetched: { osv: osv.length, github: github.length, rss: rss.length },
+    fetched: { osv: osv.length, github: github.length },
+    removedRetired,
     removedLegacy,
     ...result
   }

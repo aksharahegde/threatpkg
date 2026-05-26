@@ -18,15 +18,7 @@ async function seed() {
 
   await db.insert(sources).values([
     { name: 'OSV', type: 'api', url: 'https://osv.dev/', enabled: true },
-    { name: 'GitHub Advisories', type: 'api', url: 'https://github.com/advisories', enabled: true },
-    { name: 'Snyk', type: 'rss', url: 'https://snyk.io/blog/feed/', enabled: true },
-    { name: 'Phylum', type: 'rss', url: 'https://blog.phylum.io/rss.xml', enabled: true },
-    {
-      name: 'JFrog Blog',
-      type: 'rss',
-      url: 'https://jfrog.com/blog/feed/',
-      enabled: true
-    }
+    { name: 'GitHub Advisories', type: 'api', url: 'https://github.com/advisories', enabled: true }
   ])
 
   await client.end()

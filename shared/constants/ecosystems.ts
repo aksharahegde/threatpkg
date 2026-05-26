@@ -134,40 +134,6 @@ export function mapGithubEcosystem(raw: string): Ecosystem | null {
   return githubNameToEcosystem.get(raw.trim().toLowerCase()) ?? null
 }
 
-/** RSS / free-text inference: explicit ecosystem mention wins; npm only if npm mentioned. */
-export function inferEcosystemFromText(text: string): Ecosystem | null {
-  const lower = text.toLowerCase()
-
-  const rules: { eco: Ecosystem; patterns: RegExp[] }[] = [
-    {
-      eco: 'packagist',
-      patterns: [
-        /\blaravel\b/,
-        /\bpackagist\b/,
-        /\bcomposer\b/,
-        /\bphp package\b/
-      ]
-    },
-    {
-      eco: 'pub',
-      patterns: [/\bflutter\b/, /\bpub\.dev\b/, /\bdart package\b/, /\bpubspec\b/]
-    },
-    { eco: 'pypi', patterns: [/\bpypi\b/, /\bpython package\b/, /\bpip install\b/] },
-    { eco: 'crates', patterns: [/\bcrates\.io\b/, /\bcargo\b/, /\brust crate\b/] },
-    { eco: 'go', patterns: [/\bgo module\b/, /\bgolang\b/, /\bpkg\.go\.dev\b/] },
-    { eco: 'maven', patterns: [/\bmaven\b/, /\bjava package\b/] },
-    { eco: 'nuget', patterns: [/\bnuget\b/, /\.net package\b/] },
-    { eco: 'rubygems', patterns: [/\brubygems\b/, /\bruby gem\b/] },
-    { eco: 'npm', patterns: [/\bnpm\b/, /\bnode package\b/] }
-  ]
-
-  for (const { eco, patterns } of rules) {
-    if (patterns.some((p) => p.test(lower))) return eco
-  }
-
-  return null
-}
-
 export function remediationCommands(
   ecosystem: Ecosystem,
   packageName: string

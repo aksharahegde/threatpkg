@@ -16,7 +16,7 @@ export const THREAT_TYPES = [
 ] as const
 export type ThreatType = (typeof THREAT_TYPES)[number]
 
-export const SOURCES = ['osv', 'github', 'snyk', 'phylum', 'jfrog'] as const
+export const SOURCES = ['osv', 'github'] as const
 export type Source = (typeof SOURCES)[number]
 
 export const TIME_RANGES = ['24h', '7d', '30d'] as const

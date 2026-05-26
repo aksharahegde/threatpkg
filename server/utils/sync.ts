@@ -177,6 +177,20 @@ export async function refreshPackageReputation() {
   `)
 }
 
+const RETIRED_SOURCES = ['snyk', 'phylum', 'jfrog'] as const
+
+export async function removeRetiredSourceIncidents() {
+  const db = getDb()
+  const deleted = await db
+    .delete(incidents)
+    .where(inArray(incidents.source, [...RETIRED_SOURCES]))
+    .returning({ id: incidents.id })
+  if (deleted.length > 0) {
+    await refreshPackageReputation()
+  }
+  return deleted.length
+}
+
 export async function removeUnsyncedIncidents() {
   const db = getDb()
   const deleted = await db

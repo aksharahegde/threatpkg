@@ -49,7 +49,7 @@ export function normalizeThreatType(value: string | undefined): ThreatType {
 
 export function normalizeSource(value: string): Source {
   const v = value.toLowerCase()
-  const allowed = ['osv', 'github', 'snyk', 'phylum', 'jfrog'] as const
+  const allowed = ['osv', 'github'] as const
   if ((allowed as readonly string[]).includes(v)) {
     return v as Source
   }

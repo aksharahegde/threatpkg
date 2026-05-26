@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
 import {
-  inferEcosystemFromText,
   mapGithubEcosystem,
   mapOsvEcosystem,
   remediationCommands
@@ -25,17 +24,6 @@ describe('mapGithubEcosystem', () => {
     expect(mapGithubEcosystem('go')).toBe('go')
     expect(mapGithubEcosystem('composer')).toBe('packagist')
     expect(mapGithubEcosystem('pub')).toBe('pub')
-  })
-})
-
-describe('inferEcosystemFromText', () => {
-  it('detects ecosystem from article text', () => {
-    expect(inferEcosystemFromText('Malware in foo — npm supply chain')).toBe('npm')
-    expect(inferEcosystemFromText('PyPI typosquat campaign')).toBe('pypi')
-    expect(inferEcosystemFromText('crates.io malicious crate')).toBe('crates')
-    expect(inferEcosystemFromText('Laravel Lang packages compromised')).toBe('packagist')
-    expect(inferEcosystemFromText('Flutter pub.dev dependency attack')).toBe('pub')
-    expect(inferEcosystemFromText('Unrelated product launch')).toBeNull()
   })
 })
 

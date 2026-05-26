@@ -63,7 +63,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `bun run db:generate` | Generate Drizzle migrations |
 | `bun run db:migrate` | Apply migrations |
 | `bun run db:seed` | Seed source registry |
-| `bun run db:sync` | Ingest incidents from OSV, GitHub Advisories, and RSS |
+| `bun run db:sync` | Ingest incidents from OSV and GitHub Advisories |
 
 Scheduled ingest: locally every 30 minutes via Nitro `sync-all` task; on Vercel via [Cron Jobs](https://vercel.com/docs/cron-jobs) (`GET /api/cron/sync`, daily at 06:00 UTC on Hobby — use `*/30 * * * *` in `vercel.json` on Pro).
 
@@ -73,7 +73,6 @@ Scheduled ingest: locally every 30 minutes via Nitro `sync-all` task; on Vercel 
 |--------|------|-------|
 | OSV | API | Recent vulns and malware per ecosystem (modified-id lists) |
 | GitHub Advisories | API | Optional `GITHUB_TOKEN` for higher rate limits |
-| Snyk, Phylum, JFrog | RSS | Security research blog feeds |
 
 ## Routes
 
@@ -99,7 +98,7 @@ Scheduled ingest: locally every 30 minutes via Nitro `sync-all` task; on Vercel 
 
 Query parameters for `/api/feed`: `ecosystem`, `severity`, `threatType`, `source`, `range` (`24h` \| `7d` \| `30d`), `q`, `sort` (`published` \| `risk`), `cursor`, `limit`.
 
-API routes are rate-limited (120 requests per minute per client IP) and responses include standard security headers (CSP, `X-Frame-Options`, etc.). RSS ingest caps response bodies at 2 MiB.
+API routes are rate-limited (120 requests per minute per client IP) and responses include standard security headers (CSP, `X-Frame-Options`, etc.).
 
 ## Spec
 
