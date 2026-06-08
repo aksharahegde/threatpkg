@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ECOSYSTEM_META } from '#shared/constants/ecosystems'
-import { packagePagePath } from '#shared/utils/package-path'
 
 definePageMeta({ layout: 'dashboard' })
 
@@ -122,15 +121,6 @@ const dataSources = [
               <template v-else>
                 Ruby gems on RubyGems.org with linked GHSA/OSV records where published.
               </template>
-            </p>
-            <p class="mt-2 font-mono text-[11px] text-[var(--tp-text-dim)]">
-              Example package URL:
-              <NuxtLink
-                :to="packagePagePath(eco.id, 'example')"
-                class="text-[var(--tp-accent)] hover:opacity-80"
-              >
-                {{ packagePagePath(eco.id, 'example') }}
-              </NuxtLink>
             </p>
           </li>
         </ul>

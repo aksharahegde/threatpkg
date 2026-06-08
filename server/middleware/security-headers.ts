@@ -1,11 +1,14 @@
 export default defineEventHandler((event) => {
+  const path = event.path ?? ''
+  const isOgImage = path.startsWith('/_og/')
+
   setHeaders(event, {
     'X-Frame-Options': 'DENY',
     'X-Content-Type-Options': 'nosniff',
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
     'Cross-Origin-Opener-Policy': 'same-origin',
-    'Cross-Origin-Resource-Policy': 'same-site',
+    'Cross-Origin-Resource-Policy': isOgImage ? 'cross-origin' : 'same-site',
     'Content-Security-Policy': [
       "default-src 'self'",
       "base-uri 'self'",

@@ -3,12 +3,13 @@ import { defineArticle } from '@unhead/schema-org/vue'
 import { extractIncidentSourceDigests } from '#shared/utils/incident-description'
 import { absoluteSiteUrl, incidentMetaDescription } from '#shared/utils/seo'
 import { packagePagePath } from '#shared/utils/package-path'
+import { getEcosystemMeta } from '#shared/constants/ecosystems'
 
 definePageMeta({ layout: 'dashboard' })
 
 const route = useRoute()
 const id = computed(() => route.params.id as string)
-const { data: incident, pending, error } = useIncident(id)
+const { data: incident, pending, error } = await useIncident(id)
 
 const site = useSiteConfig()
 
@@ -41,12 +42,27 @@ const breadcrumbAppend = computed(() => {
   ]
 })
 
+const ecoLabel = computed(
+  () =>
+    getEcosystemMeta(incident.value?.ecosystem ?? '')?.label ??
+    incident.value?.ecosystem ??
+    ''
+)
+
 usePageSeo({
   title: () => incident.value?.title ?? 'Incident',
   description: () =>
     incident.value
       ? incidentMetaDescription(incident.value)
       : 'Supply-chain incident detail from the ThreatPkg threat intelligence feed.'
+})
+
+defineOgImage('IncidentDetail', {
+  title: () => incident.value?.title ?? 'Supply-chain incident',
+  packageName: () => incident.value?.packageName ?? 'unknown',
+  ecosystemLabel: () => ecoLabel.value,
+  severity: () => incident.value?.severity ?? 'UNKNOWN',
+  siteName: () => site.name
 })
 
 useSchemaOrg(

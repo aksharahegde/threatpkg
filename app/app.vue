@@ -1,8 +1,5 @@
 <script setup lang="ts">
-const site = useSiteConfig()
 const colorMode = useColorMode()
-
-const absoluteOgImage = computed(() => new URL('/logo.png', site.url).href)
 
 useHead({
   meta: [
@@ -15,11 +12,8 @@ useHead({
   ]
 })
 
-/** Global OG/Twitter defaults from nuxt-site-config + nuxt-seo-utils */
 useSeoMeta({
-  twitterCard: 'summary_large_image',
-  ogImage: absoluteOgImage,
-  twitterImage: absoluteOgImage
+  twitterCard: 'summary_large_image'
 })
 </script>
 

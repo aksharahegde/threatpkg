@@ -44,7 +44,7 @@ const titleSizeClass = computed(() => {
 <template>
   <div
     class="flex h-full w-full flex-col justify-between bg-[#0a0a0c] p-16 text-[#f4f4f5]"
-    style="font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif"
+    style="font-family: ui-sans-serif, system-ui, sans-serif"
   >
     <div>
       <p class="text-2xl font-semibold uppercase tracking-widest text-[#ff8c00]">
@@ -55,7 +55,7 @@ const titleSizeClass = computed(() => {
       </p>
       <h1
         :class="['mt-8 font-bold leading-[1.1] text-[#f4f4f5]', titleSizeClass]"
-        style="font-family: 'JetBrains Mono', ui-monospace, monospace"
+        style="font-family: ui-monospace, monospace"
       >
         <span
           v-for="(line, index) in titleLines"
@@ -69,7 +69,7 @@ const titleSizeClass = computed(() => {
         <p class="text-lg uppercase tracking-wide text-[#71717a]">Risk score</p>
         <p
           class="text-8xl font-bold tabular-nums text-[#ff8c00]"
-          style="font-family: 'JetBrains Mono', ui-monospace, monospace"
+          style="font-family: ui-monospace, monospace"
         >
           {{ riskScore }}
         </p>
@@ -78,7 +78,7 @@ const titleSizeClass = computed(() => {
         <p class="text-lg uppercase tracking-wide text-[#71717a]">Incidents</p>
         <p
           class="text-6xl font-bold tabular-nums text-[#f4f4f5]"
-          style="font-family: 'JetBrains Mono', ui-monospace, monospace"
+          style="font-family: ui-monospace, monospace"
         >
           {{ incidentCount }}
         </p>

@@ -101,21 +101,25 @@ useSchemaOrg(
       :append="breadcrumbAppend"
     />
 
-    <div v-if="pending" class="px-4 py-8 text-neutral-500">Loading…</div>
-    <div v-else-if="error || !data" class="px-4 py-8 text-red-600">
+    <div
+      v-if="pending"
+      class="flex items-center justify-center gap-2 px-4 py-16 font-tp-mono text-xs text-[var(--tp-text-dim)]"
+    >
+      <UIcon name="i-lucide-loader-circle" class="size-4 animate-spin text-[var(--tp-accent)]" />
+      Loading package…
+    </div>
+    <div
+      v-else-if="error || !data"
+      class="px-4 py-16 text-center font-tp-mono text-sm text-red-400"
+    >
       Package not found.
     </div>
     <template v-else>
       <PackageMeta :detail="data" />
-      <PackageReputationScore
-        :risk-score="data.reputation.riskScore"
-        :incident-count="data.reputation.incidentCount"
-      />
       <PackageIncidentHistory
         :incidents="data.incidents"
         :signals="data.suspiciousSignals"
       />
-      <ChartsRiskTrend />
     </template>
   </div>
 </template>

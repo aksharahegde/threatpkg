@@ -9,6 +9,7 @@ Public realtime dashboard for open-source package threat intelligence across **n
 - **Package lookup** — search packages from the navbar; resolves to the correct ecosystem route
 - **Incident detail** — markdown advisories, timeline, indicators, affected versions, related incidents
 - **Package pages** — reputation score and incident history per package
+- **Dependency scan** — upload lock files or manifests; check pinned versions against malware incidents (local index + live OSV)
 - **Light / dark theme** — system preference with manual toggle (persisted in local storage)
 
 ## Stack
@@ -44,7 +45,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `DATABASE_URL` | Yes | PostgreSQL connection string |
-| `NUXT_PUBLIC_SITE_URL` | No | Canonical site URL for SEO / OG (default `http://localhost:3000`) |
+| `NUXT_PUBLIC_SITE_URL` | No | Canonical site URL for SEO / OG (default `http://localhost:3000`). On Vercel, set this to your **custom domain** (e.g. `https://tpkg.akshara.dev`), not the `*.vercel.app` URL — otherwise `og:image` and social previews use the wrong host. |
 | `GITHUB_TOKEN` | No | Raises GitHub Advisory API rate limits during sync |
 | `SYNC_SECRET` | For manual sync | Required to enable `POST /api/sync` (send as `x-sync-secret` header) |
 | `CRON_SECRET` | For Vercel Cron | Set on Vercel; authorizes `GET /api/cron/sync` (Bearer token sent automatically) |
