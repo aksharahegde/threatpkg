@@ -117,7 +117,7 @@ export function parsePackageJson(content: string): ParseResult {
         })
       } else {
         warnings.push(
-          `package.json: skipped ${name}@${version} (range — use package-lock.json, yarn.lock, or bun.lock for exact version)`
+          `package.json: skipped ${name}@${version} (range — use a lockfile for exact version)`
         )
       }
     }
@@ -245,6 +245,64 @@ export function parseYarnLock(content: string): ParseResult {
   return { dependencies, warnings }
 }
 
+function pnpmPackageFromKeyLine(line: string): { name: string; version: string } | null {
+  const match = line.match(/^  (['"]?)(\/?[^'"\n]+)\1:\s*$/)
+  if (!match?.[2]?.includes('@')) return null
+
+  const key = match[2].replace(/\(.*\)$/, '')
+  const withoutSlash = key.startsWith('/') ? key.slice(1) : key
+  const at = withoutSlash.lastIndexOf('@')
+  if (at <= 0) return null
+
+  const name = withoutSlash.slice(0, at)
+  const version = withoutSlash.slice(at + 1)
+  if (!name || !version) return null
+
+  return { name, version }
+}
+
+export function parsePnpmLock(content: string): ParseResult {
+  const warnings: string[] = []
+  const dependencies: ResolvedDependency[] = []
+  const seen = new Set<string>()
+
+  let inPackages = false
+
+  for (const rawLine of content.split('\n')) {
+    const line = rawLine.replace(/\r$/, '')
+
+    if (/^packages:\s*$/.test(line)) {
+      inPackages = true
+      continue
+    }
+
+    if (inPackages && /^[^\s#]/.test(line)) {
+      inPackages = false
+    }
+
+    if (!inPackages) continue
+
+    const parsed = pnpmPackageFromKeyLine(line)
+    if (!parsed) continue
+
+    const dedupeKey = `${parsed.name.toLowerCase()}@${parsed.version}`
+    if (seen.has(dedupeKey)) continue
+    seen.add(dedupeKey)
+
+    dependencies.push({
+      packageName: normalizePackageName(parsed.name),
+      version: parsed.version,
+      ecosystem: 'npm'
+    })
+  }
+
+  if (!dependencies.length) {
+    warnings.push('pnpm-lock.yaml: no packages found')
+  }
+
+  return { dependencies, warnings }
+}
+
 export function parsePoetryLock(content: string): ParseResult {
   const warnings: string[] = []
   const dependencies: ResolvedDependency[] = []
@@ -309,6 +367,7 @@ type FileKind =
   | 'package-lock'
   | 'yarn-lock'
   | 'bun-lock'
+  | 'pnpm-lock'
   | 'package-json'
   | 'poetry-lock'
   | 'requirements'
@@ -319,6 +378,14 @@ function detectFileKind(filename: string): FileKind {
   if (lower === 'package-lock.json' || lower.endsWith('/package-lock.json')) return 'package-lock'
   if (lower === 'yarn.lock' || lower.endsWith('/yarn.lock')) return 'yarn-lock'
   if (lower === 'bun.lock' || lower.endsWith('/bun.lock')) return 'bun-lock'
+  if (
+    lower === 'pnpm-lock.yaml' ||
+    lower.endsWith('/pnpm-lock.yaml') ||
+    lower === 'pnpm.lock' ||
+    lower.endsWith('/pnpm.lock')
+  ) {
+    return 'pnpm-lock'
+  }
   if (lower === 'package.json' || lower.endsWith('/package.json')) return 'package-json'
   if (lower === 'poetry.lock' || lower.endsWith('/poetry.lock')) return 'poetry-lock'
   if (lower === 'requirements.txt' || lower.endsWith('/requirements.txt')) return 'requirements'
@@ -334,6 +401,8 @@ function parseFile(file: DependencyFileInput): ParseResult {
       return parseYarnLock(file.content)
     case 'bun-lock':
       return parseBunLock(file.content)
+    case 'pnpm-lock':
+      return parsePnpmLock(file.content)
     case 'package-json':
       return parsePackageJson(file.content)
     case 'poetry-lock':
@@ -344,7 +413,7 @@ function parseFile(file: DependencyFileInput): ParseResult {
       return {
         dependencies: [],
         warnings: [
-          `Unknown file type: ${file.filename} (expected package-lock.json, yarn.lock, bun.lock, package.json, poetry.lock, or requirements.txt)`
+          `Unknown file type: ${file.filename} (expected package-lock.json, yarn.lock, bun.lock, pnpm-lock.yaml, package.json, poetry.lock, or requirements.txt)`
         ]
       }
   }
@@ -354,6 +423,7 @@ const LOCK_PRIORITY: Record<FileKind, number> = {
   'package-lock': 3,
   'yarn-lock': 3,
   'bun-lock': 3,
+  'pnpm-lock': 3,
   'poetry-lock': 3,
   'package-json': 1,
   requirements: 1,

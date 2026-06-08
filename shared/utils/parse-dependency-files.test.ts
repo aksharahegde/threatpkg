@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   mergeDependencySets,
   parseBunLock,
+  parsePnpmLock,
   parsePackageJson,
   parsePackageLock,
   parsePoetryLock,
@@ -138,6 +139,74 @@ lodash@^4.17.21:
   })
 })
 
+describe('parsePnpmLock', () => {
+  it('parses pnpm v6 packages with leading slash', () => {
+    const content = `
+lockfileVersion: '6.0'
+
+importers:
+  .:
+    dependencies:
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+
+packages:
+  /lodash@4.17.21:
+    resolution: {integrity: sha512-abc}
+    engines: {node: '>=0.10.0'}
+  /@scope/pkg@1.2.3:
+    resolution: {integrity: sha512-def}
+`
+    const { dependencies } = parsePnpmLock(content)
+    expect(dependencies).toContainEqual({
+      packageName: 'lodash',
+      version: '4.17.21',
+      ecosystem: 'npm'
+    })
+    expect(dependencies).toContainEqual({
+      packageName: '@scope/pkg',
+      version: '1.2.3',
+      ecosystem: 'npm'
+    })
+  })
+
+  it('parses pnpm v9 packages without leading slash', () => {
+    const content = `
+lockfileVersion: '9.0'
+
+packages:
+  chalk@5.3.0:
+    resolution: {integrity: sha512-ghi}
+  "@types/node@18.19.0":
+    resolution: {integrity: sha512-jkl}
+`
+    const { dependencies } = parsePnpmLock(content)
+    expect(dependencies).toContainEqual({
+      packageName: 'chalk',
+      version: '5.3.0',
+      ecosystem: 'npm'
+    })
+    expect(dependencies).toContainEqual({
+      packageName: '@types/node',
+      version: '18.19.0',
+      ecosystem: 'npm'
+    })
+  })
+
+  it('strips peer dependency suffix from package keys', () => {
+    const content = `
+packages:
+  /foo@1.0.0(bar@2.0.0):
+    resolution: {integrity: sha512-mno}
+`
+    const { dependencies } = parsePnpmLock(content)
+    expect(dependencies).toEqual([
+      { packageName: 'foo', version: '1.0.0', ecosystem: 'npm' }
+    ])
+  })
+})
+
 describe('parseBunLock', () => {
   it('parses bun.lock packages map', () => {
     const content = JSON.stringify({
@@ -184,6 +253,26 @@ describe('mergeDependencySets', () => {
     ])
     expect(result.dependencies).toEqual([
       { packageName: 'lodash', version: '4.17.21', ecosystem: 'npm' }
+    ])
+  })
+
+  it('prefers pnpm-lock.yaml over package.json', () => {
+    const result = mergeDependencySets([
+      {
+        filename: 'package.json',
+        content: JSON.stringify({ dependencies: { leftpad: '1.0.0' } })
+      },
+      {
+        filename: 'pnpm-lock.yaml',
+        content: `
+packages:
+  /leftpad@1.0.1:
+    resolution: {integrity: sha512-abc}
+`
+      }
+    ])
+    expect(result.dependencies).toEqual([
+      { packageName: 'leftpad', version: '1.0.1', ecosystem: 'npm' }
     ])
   })
 

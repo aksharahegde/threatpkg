@@ -39,7 +39,8 @@ const visibleResults = computed(() => {
         malware checks)—not every CVE. Prefer
         <span class="font-tp-mono text-[var(--tp-text)]">package-lock.json</span>,
         <span class="font-tp-mono text-[var(--tp-text)]">yarn.lock</span>,
-        <span class="font-tp-mono text-[var(--tp-text)]">bun.lock</span>, or
+        <span class="font-tp-mono text-[var(--tp-text)]">bun.lock</span>,
+        <span class="font-tp-mono text-[var(--tp-text)]">pnpm-lock.yaml</span>, or
         <span class="font-tp-mono text-[var(--tp-text)]">poetry.lock</span>
         for exact versions.
       </p>

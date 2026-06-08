@@ -14,7 +14,7 @@ const pasteName = ref('requirements.txt')
 const pasteContent = ref('')
 const error = ref<string | null>(null)
 
-const ACCEPTED = '.json,.lock,.txt'
+const ACCEPTED = '.json,.lock,.yaml,.yml,.txt'
 
 async function onFileChange(event: Event) {
   const input = event.target as HTMLInputElement
@@ -75,7 +75,7 @@ function onSubmit(e: Event) {
     <div data-testid="scan-manifest-upload">
       <label class="tp-label block" for="scan-file-input">Upload manifests</label>
       <p class="mt-1 text-xs text-[var(--tp-text-dim)]">
-        package-lock.json, yarn.lock, bun.lock, package.json, poetry.lock, or requirements.txt (max 5 files)
+        package-lock.json, yarn.lock, bun.lock, pnpm-lock.yaml, package.json, poetry.lock, or requirements.txt (max 5 files)
       </p>
       <input
         id="scan-file-input"
@@ -102,6 +102,7 @@ function onSubmit(e: Event) {
           <option value="package-lock.json">package-lock.json</option>
           <option value="yarn.lock">yarn.lock</option>
           <option value="bun.lock">bun.lock</option>
+          <option value="pnpm-lock.yaml">pnpm-lock.yaml</option>
           <option value="poetry.lock">poetry.lock</option>
         </select>
         <button
