@@ -276,6 +276,26 @@ packages:
     ])
   })
 
+  it('keeps multiple versions of the same package across lockfiles', () => {
+    const result = mergeDependencySets([
+      {
+        filename: 'a/yarn.lock',
+        content: `lodash@^4.17.20:\n  version "4.17.20"\n`
+      },
+      {
+        filename: 'b/yarn.lock',
+        content: `lodash@^4.17.21:\n  version "4.17.21"\n`
+      }
+    ])
+    expect(result.dependencies).toEqual(
+      expect.arrayContaining([
+        { packageName: 'lodash', version: '4.17.20', ecosystem: 'npm' },
+        { packageName: 'lodash', version: '4.17.21', ecosystem: 'npm' }
+      ])
+    )
+    expect(result.dependencies).toHaveLength(2)
+  })
+
   it('prefers yarn.lock over package.json', () => {
     const result = mergeDependencySets([
       {

@@ -1,8 +1,8 @@
 import type { DependencyFileInput } from '#shared/types/scan'
 
 export const SCAN_MAX_FILES = 5
-export const SCAN_MAX_FILE_BYTES = 512 * 1024
-export const SCAN_MAX_TOTAL_BYTES = 1024 * 1024
+export const SCAN_MAX_FILE_BYTES = 2 * 1024 * 1024
+export const SCAN_MAX_TOTAL_BYTES = 10 * 1024 * 1024
 
 export function validateScanFiles(files: DependencyFileInput[]): void {
   if (!Array.isArray(files) || files.length === 0) {

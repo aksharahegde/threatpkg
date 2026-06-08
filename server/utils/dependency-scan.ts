@@ -174,7 +174,7 @@ function evaluateLocalDependency(
 }
 
 function depKey(dep: ResolvedDependency) {
-  return `${dep.ecosystem}:${dep.packageName.toLowerCase()}`
+  return `${dep.ecosystem}:${dep.packageName.toLowerCase()}@${dep.version}`
 }
 
 function mergeWithOsv(
@@ -190,26 +190,41 @@ function mergeWithOsv(
     [local.minFixedVersion, ...osvHits.map((h) => h.minFixedVersion)]
   )
 
-  const hasUnknownOnly = osvHits.every((h) => !h.minFixedVersion)
-
   return {
     ...local,
-    status: hasUnknownOnly && !minFixedVersion ? 'unknown' : 'compromised',
+    status: 'compromised',
     minFixedVersion,
     incidents: [...local.incidents, ...osvIncidents]
   }
 }
 
+function countIndexedNameMatches(
+  dependencies: ResolvedDependency[],
+  incidentList: IncidentWithIndicators[]
+): number {
+  if (!incidentList.length) return 0
+
+  const incidentNames = new Set(
+    incidentList.map((inc) => `${inc.ecosystem}:${inc.packageName.toLowerCase()}`)
+  )
+
+  return dependencies.filter((dep) =>
+    incidentNames.has(`${dep.ecosystem}:${dep.packageName.toLowerCase()}`)
+  ).length
+}
+
 function buildSummary(
   results: ScanPackageResult[],
-  warningCount: number
+  warningCount: number,
+  indexedNameMatches: number
 ): ScanSummary {
   return {
     total: results.length,
     compromised: results.filter((r) => r.status === 'compromised').length,
     safe: results.filter((r) => r.status === 'safe').length,
     unknown: results.filter((r) => r.status === 'unknown').length,
-    warnings: warningCount
+    warnings: warningCount,
+    indexedNameMatches
   }
 }
 
@@ -220,7 +235,7 @@ export async function scanDependencyFiles(
 
   if (!dependencies.length) {
     return {
-      summary: buildSummary([], warnings.length),
+      summary: buildSummary([], warnings.length, 0),
       results: [],
       warnings
     }
@@ -230,6 +245,8 @@ export async function scanDependencyFiles(
     loadIncidentsForDeps(dependencies),
     queryOsvMalwareByDependency(dependencies)
   ])
+
+  const indexedNameMatches = countIndexedNameMatches(dependencies, incidentsForDeps)
 
   const results = dependencies.map((dep) => {
     const local = evaluateLocalDependency(dep, incidentsForDeps)
@@ -244,7 +261,7 @@ export async function scanDependencyFiles(
   })
 
   return {
-    summary: buildSummary(compromisedFirst, warnings.length),
+    summary: buildSummary(compromisedFirst, warnings.length, indexedNameMatches),
     results: compromisedFirst,
     warnings
   }

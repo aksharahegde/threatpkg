@@ -22,7 +22,7 @@ export interface OsvScanHit {
 }
 
 function depKey(dep: ResolvedDependency) {
-  return `${dep.ecosystem}:${dep.packageName.toLowerCase()}`
+  return `${dep.ecosystem}:${dep.packageName.toLowerCase()}@${dep.version}`
 }
 
 async function queryOsvBatch(

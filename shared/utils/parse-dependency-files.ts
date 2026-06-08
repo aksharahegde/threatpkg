@@ -8,8 +8,8 @@ import type {
 const EXACT_VERSION_RE = /^\d+\.\d+\.\d+(-[\w.]+)?(\+[\w.]+)?$/
 const RANGE_PREFIX_RE = /^[~^><=]/
 
-function depKey(eco: ScanEcosystem, name: string) {
-  return `${eco}:${name.toLowerCase()}`
+function depKey(eco: ScanEcosystem, name: string, version: string) {
+  return `${eco}:${name.toLowerCase()}@${version}`
 }
 
 function isExactVersion(version: string): boolean {
@@ -432,7 +432,7 @@ const LOCK_PRIORITY: Record<FileKind, number> = {
 
 export function mergeDependencySets(files: DependencyFileInput[]): ParseResult {
   const warnings: string[] = []
-  const byKey = new Map<string, { dep: ResolvedDependency; priority: number }>()
+  const tagged: { dep: ResolvedDependency; priority: number }[] = []
 
   for (const file of files) {
     const kind = detectFileKind(file.filename)
@@ -441,17 +441,30 @@ export function mergeDependencySets(files: DependencyFileInput[]): ParseResult {
     warnings.push(...result.warnings)
 
     for (const dep of result.dependencies) {
-      const key = depKey(dep.ecosystem, dep.packageName)
-      const existing = byKey.get(key)
-      if (!existing || priority > existing.priority) {
-        byKey.set(key, { dep, priority })
-      }
+      tagged.push({ dep, priority })
     }
   }
 
-  const dependencies = [...byKey.values()]
-    .map((e) => e.dep)
-    .sort((a, b) => a.packageName.localeCompare(b.packageName))
+  const maxPriorityByName = new Map<string, number>()
+  for (const item of tagged) {
+    const nameKey = `${item.dep.ecosystem}:${item.dep.packageName.toLowerCase()}`
+    const current = maxPriorityByName.get(nameKey) ?? 0
+    if (item.priority > current) maxPriorityByName.set(nameKey, item.priority)
+  }
+
+  const byVersionKey = new Map<string, ResolvedDependency>()
+  for (const item of tagged) {
+    const nameKey = `${item.dep.ecosystem}:${item.dep.packageName.toLowerCase()}`
+    const maxPriority = maxPriorityByName.get(nameKey) ?? 0
+    if (item.priority < maxPriority) continue
+
+    const versionKey = depKey(item.dep.ecosystem, item.dep.packageName, item.dep.version)
+    byVersionKey.set(versionKey, item.dep)
+  }
+
+  const dependencies = [...byVersionKey.values()].sort((a, b) =>
+    a.packageName.localeCompare(b.packageName)
+  )
 
   return { dependencies, warnings }
 }

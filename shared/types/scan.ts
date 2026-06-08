@@ -40,6 +40,8 @@ export interface ScanSummary {
   safe: number
   unknown: number
   warnings: number
+  /** Dependencies whose package name exists in the local malware index */
+  indexedNameMatches: number
 }
 
 export interface ScanResponse {

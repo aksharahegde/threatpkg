@@ -50,6 +50,24 @@ const visibleResults = computed(() => {
       <p v-if="error" class="font-tp-mono text-xs text-red-500">{{ error }}</p>
 
       <section v-if="response" class="space-y-4">
+        <p
+          v-if="response.summary.compromised === 0 && response.summary.unknown === 0"
+          class="rounded-sm border border-[var(--tp-border)] bg-[var(--tp-surface-raised)] px-4 py-3 text-sm text-[var(--tp-text-muted)]"
+          data-testid="scan-all-safe-note"
+        >
+          No malware matches for {{ response.summary.total }} pinned
+          {{ response.summary.total === 1 ? 'dependency' : 'dependencies' }}.
+          <template v-if="response.summary.indexedNameMatches === 0">
+            None of these package names appear in the local malware incident index.
+          </template>
+          <template v-else>
+            {{ response.summary.indexedNameMatches }}
+            {{ response.summary.indexedNameMatches === 1 ? 'name matches' : 'names match' }}
+            the index, but installed versions were not flagged.
+          </template>
+          This scan checks supply-chain malware incidents, not every CVE.
+        </p>
+
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-5">
           <div class="tp-panel rounded-sm px-3 py-2">
             <p class="tp-label">Total</p>

@@ -13,6 +13,15 @@ const files = ref<DependencyFileInput[]>([])
 const pasteName = ref('requirements.txt')
 const pasteContent = ref('')
 const error = ref<string | null>(null)
+const readingFiles = ref(false)
+
+const busy = computed(() => readingFiles.value || !!props.pending)
+
+const submitLabel = computed(() => {
+  if (readingFiles.value) return 'Reading files…'
+  if (props.pending) return 'Scanning…'
+  return 'Scan dependencies'
+})
 
 const ACCEPTED = '.json,.lock,.yaml,.yml,.txt'
 
@@ -22,19 +31,25 @@ async function onFileChange(event: Event) {
   if (!list?.length) return
 
   error.value = null
-  const next = [...files.value]
+  readingFiles.value = true
 
-  for (const file of Array.from(list)) {
-    if (next.length >= 5) {
-      error.value = 'Maximum 5 files'
-      break
+  try {
+    const next = [...files.value]
+
+    for (const file of Array.from(list)) {
+      if (next.length >= 5) {
+        error.value = 'Maximum 5 files'
+        break
+      }
+      const content = await file.text()
+      next.push({ filename: file.name, content })
     }
-    const content = await file.text()
-    next.push({ filename: file.name, content })
-  }
 
-  files.value = next
-  input.value = ''
+    files.value = next
+  } finally {
+    readingFiles.value = false
+    input.value = ''
+  }
 }
 
 function addPaste() {
@@ -58,6 +73,7 @@ function removeFile(index: number) {
 
 function onSubmit(e: Event) {
   e.preventDefault()
+  if (busy.value) return
   if (!files.value.length) {
     error.value = 'Add at least one file'
     return
@@ -75,7 +91,7 @@ function onSubmit(e: Event) {
     <div data-testid="scan-manifest-upload">
       <label class="tp-label block" for="scan-file-input">Upload manifests</label>
       <p class="mt-1 text-xs text-[var(--tp-text-dim)]">
-        package-lock.json, yarn.lock, bun.lock, pnpm-lock.yaml, package.json, poetry.lock, or requirements.txt (max 5 files)
+        package-lock.json, yarn.lock, bun.lock, pnpm-lock.yaml, package.json, poetry.lock, or requirements.txt (max 5 files, 10 MB total)
       </p>
       <input
         id="scan-file-input"
@@ -83,9 +99,17 @@ function onSubmit(e: Event) {
         multiple
         :accept="ACCEPTED"
         class="mt-2 block w-full font-tp-mono text-xs text-[var(--tp-text-muted)] file:mr-3 file:rounded-sm file:border file:border-[var(--tp-border)] file:bg-[var(--tp-surface-inset)] file:px-3 file:py-1.5 file:text-xs file:text-[var(--tp-text)]"
-        :disabled="props.pending"
+        :disabled="busy"
         @change="onFileChange"
       />
+      <p
+        v-if="readingFiles"
+        class="mt-2 flex items-center gap-2 font-tp-mono text-xs text-[var(--tp-text-muted)]"
+        data-testid="scan-manifest-reading"
+      >
+        <UIcon name="i-lucide-loader-circle" class="size-3.5 animate-spin text-[var(--tp-accent)]" />
+        Reading files…
+      </p>
     </div>
 
     <div class="border-t border-[var(--tp-border)] pt-4">
@@ -95,7 +119,7 @@ function onSubmit(e: Event) {
           id="scan-paste-name"
           v-model="pasteName"
           class="font-tp-mono rounded-sm border border-[var(--tp-border)] bg-[var(--tp-surface-inset)] px-2 py-1.5 text-xs text-[var(--tp-text)]"
-          :disabled="props.pending"
+          :disabled="busy"
         >
           <option value="requirements.txt">requirements.txt</option>
           <option value="package.json">package.json</option>
@@ -108,7 +132,7 @@ function onSubmit(e: Event) {
         <button
           type="button"
           class="tp-pill rounded-sm px-3 py-1.5 text-xs"
-          :disabled="props.pending || !pasteContent.trim()"
+          :disabled="busy || !pasteContent.trim()"
           @click="addPaste"
         >
           Add to scan
@@ -119,7 +143,7 @@ function onSubmit(e: Event) {
         rows="6"
         placeholder="Paste file contents…"
         class="font-tp-mono mt-2 w-full rounded-sm border border-[var(--tp-border)] bg-[var(--tp-surface-inset)] px-3 py-2 text-xs text-[var(--tp-text)] placeholder:text-[var(--tp-text-dim)] focus:border-[var(--tp-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--tp-accent)]"
-        :disabled="props.pending"
+        :disabled="busy"
       />
     </div>
 
@@ -133,7 +157,7 @@ function onSubmit(e: Event) {
         <button
           type="button"
           class="text-[var(--tp-accent)] hover:opacity-80"
-          :disabled="props.pending"
+          :disabled="busy"
           @click="removeFile(index)"
         >
           Remove
@@ -146,14 +170,15 @@ function onSubmit(e: Event) {
     <button
       type="submit"
       class="tp-pill tp-pill--active rounded-sm px-4 py-2 text-xs font-medium"
-      :disabled="props.pending || !files.length"
+      :disabled="busy || !files.length"
+      data-testid="scan-manifest-scan"
     >
       <UIcon
-        v-if="props.pending"
+        v-if="busy"
         name="i-lucide-loader-circle"
         class="mr-1.5 inline size-3.5 animate-spin"
       />
-      Scan dependencies
+      {{ submitLabel }}
     </button>
   </form>
 </template>
