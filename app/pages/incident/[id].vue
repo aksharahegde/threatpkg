@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { defineArticle } from '@unhead/schema-org/vue'
+import { extractIncidentSourceDigests } from '#shared/utils/incident-description'
 import { absoluteSiteUrl, incidentMetaDescription } from '#shared/utils/seo'
 import { packagePagePath } from '#shared/utils/package-path'
 
@@ -13,6 +14,13 @@ const site = useSiteConfig()
 
 const showLoading = computed(
   () => pending.value || (!incident.value && !error.value && import.meta.server)
+)
+
+const sourceDigests = computed(
+  () =>
+    incident.value
+      ? extractIncidentSourceDigests(incident.value.description).sources
+      : []
 )
 
 const breadcrumbPrepend = [{ label: 'Threat feed', to: '/' }]
@@ -114,7 +122,7 @@ useSchemaOrg(
             :incidents="incident.relatedIncidents"
           />
         </div>
-        <IncidentSidebar :incident="incident" />
+        <IncidentSidebar :incident="incident" :source-digests="sourceDigests" />
       </div>
     </template>
   </div>

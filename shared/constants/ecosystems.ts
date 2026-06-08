@@ -130,6 +130,15 @@ export function mapOsvEcosystem(raw: string): Ecosystem | null {
   return osvNameToEcosystem.get(raw.trim().toLowerCase()) ?? null
 }
 
+const scanEcosystemToOsv: Record<string, string> = {
+  npm: 'npm',
+  pypi: 'PyPI'
+}
+
+export function toOsvQueryEcosystem(ecosystem: 'npm' | 'pypi'): string {
+  return scanEcosystemToOsv[ecosystem] ?? ecosystem
+}
+
 export function mapGithubEcosystem(raw: string): Ecosystem | null {
   return githubNameToEcosystem.get(raw.trim().toLowerCase()) ?? null
 }

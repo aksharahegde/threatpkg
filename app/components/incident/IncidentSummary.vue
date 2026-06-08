@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { extractIncidentSourceDigests } from '#shared/utils/incident-description'
 import { renderMarkdown } from '~/utils/markdown'
 
 const props = defineProps<{
@@ -6,7 +7,9 @@ const props = defineProps<{
   description: string
 }>()
 
-const descriptionHtml = computed(() => renderMarkdown(props.description))
+const parsedDescription = computed(() => extractIncidentSourceDigests(props.description))
+
+const descriptionHtml = computed(() => renderMarkdown(parsedDescription.value.body))
 </script>
 
 <template>

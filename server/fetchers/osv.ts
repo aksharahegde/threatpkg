@@ -1,6 +1,12 @@
 import type { FetcherIncident, FetcherIndicator } from './types'
 import { ECOSYSTEM_META, mapOsvEcosystem } from '../../shared/constants/ecosystems'
 import {
+  indicatorsFromOsvAffected,
+  isOsvMalwareRecord,
+  type OsvAffectedPackage,
+  type OsvVulnLike
+} from '../../shared/utils/osv-affected'
+import {
   extractPackageFromTitle,
   inferSeverity,
   inferThreatType,
@@ -13,27 +19,11 @@ const MAX_IDS_PER_ECOSYSTEM = 40
 const MAX_IDS_GLOBAL = 200
 const MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000
 
-interface OsvVuln {
-  id: string
-  summary?: string
-  details?: string
+type OsvVuln = OsvVulnLike & {
   published?: string
   modified?: string
   aliases?: string[]
-  references?: { type?: string; url?: string }[]
-  affected?: {
-    package?: { name?: string; ecosystem?: string }
-    versions?: { introduced?: string; fixed?: string }[]
-  }[]
-  database_specific?: Record<string, unknown>
-}
-
-function isMalwareRecord(vuln: OsvVuln): boolean {
-  if (vuln.id.startsWith('MAL-')) return true
-  const summary = (vuln.summary ?? '').toLowerCase()
-  if (summary.includes('malicious') || summary.includes('malware')) return true
-  const origins = vuln.database_specific?.['malicious-packages-origins']
-  return Array.isArray(origins) && origins.length > 0
+  affected?: OsvAffectedPackage[]
 }
 
 /** Collect recent malicious-package IDs (MAL-*) from an OSV modified CSV. */
@@ -81,7 +71,7 @@ async function fetchVuln(id: string): Promise<OsvVuln | null> {
 }
 
 function vulnToIncident(vuln: OsvVuln): FetcherIncident | null {
-  if (!isMalwareRecord(vuln)) return null
+  if (!isOsvMalwareRecord(vuln)) return null
 
   const affected = vuln.affected?.[0]?.package
   const ecosystemRaw = affected?.ecosystem ?? ''
@@ -115,23 +105,8 @@ function vulnToIncident(vuln: OsvVuln): FetcherIncident | null {
       confidence: 95
     })
   }
-  for (const aff of vuln.affected ?? []) {
-    for (const range of aff.versions ?? []) {
-      if (range.introduced) {
-        indicatorList.push({
-          indicatorType: 'affected_version',
-          value: `>=${range.introduced}`,
-          confidence: 75
-        })
-      }
-      if (range.fixed) {
-        indicatorList.push({
-          indicatorType: 'affected_version',
-          value: `<${range.fixed}`,
-          confidence: 75
-        })
-      }
-    }
+  for (const indicator of indicatorsFromOsvAffected(vuln.affected)) {
+    indicatorList.push({ ...indicator, confidence: 75 })
   }
 
   return {

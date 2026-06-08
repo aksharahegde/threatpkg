@@ -10,7 +10,12 @@ const MALWARE_VULN = {
   details: 'Malware campaign targeting npm users.',
   published: new Date(NOW - 3_600_000).toISOString(),
   modified: new Date(NOW - 3_600_000).toISOString(),
-  affected: [{ package: { name: 'evil-osv-pkg', ecosystem: 'npm' } }],
+  affected: [
+    {
+      package: { name: 'evil-osv-pkg', ecosystem: 'npm' },
+      versions: ['99.0.0']
+    }
+  ],
   references: [{ type: 'ADVISORY', url: 'https://osv.dev/vulnerability/MAL-2024-0001' }]
 }
 
@@ -52,7 +57,8 @@ describe('fetchOsvIncidents', () => {
       packageName: 'evil-osv-pkg',
       ecosystem: 'npm',
       source: 'osv',
-      threatType: 'malware'
+      threatType: 'malware',
+      indicators: [{ indicatorType: 'affected_version', value: '=99.0.0' }]
     })
   })
 

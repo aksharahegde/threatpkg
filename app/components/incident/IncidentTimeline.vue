@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { shouldCollapseIndicatorValue } from '#shared/utils/incident-description'
+
 defineProps<{
   timeline: { at: string; label: string }[]
   affectedVersions: string[]
@@ -13,6 +15,11 @@ function formatTime(iso: string) {
     minute: '2-digit'
   })
 }
+
+function indicatorLabel(type: string) {
+  if (type === 'alias') return 'Advisory IDs'
+  return type.replace(/_/g, ' ')
+}
 </script>
 
 <template>
@@ -22,7 +29,7 @@ function formatTime(iso: string) {
   >
     <h2 class="tp-label">Technical details</h2>
 
-    <div class="mt-4">
+    <div v-if="affectedVersions.length" class="mt-4">
       <p class="tp-label">Affected versions</p>
       <div class="mt-2 flex flex-wrap gap-1.5">
         <span
@@ -45,11 +52,19 @@ function formatTime(iso: string) {
           :key="i"
           class="flex items-center justify-between gap-3 bg-[var(--tp-surface-raised)] px-3 py-2 text-sm first:rounded-t-md last:rounded-b-md"
         >
-          <span class="min-w-0">
-            <span class="tp-label">{{ ind.indicatorType }}</span>
-            <span
-              class="mt-0.5 block truncate font-mono text-xs text-[var(--tp-text-muted)]"
-            >{{ ind.value }}</span>
+          <span class="min-w-0 flex-1">
+            <IncidentCopyableDigest
+              v-if="shouldCollapseIndicatorValue(ind.value, ind.indicatorType)"
+              :label="indicatorLabel(ind.indicatorType)"
+              :value="ind.value"
+              :testid="`incident-indicator-copy-${i}`"
+            />
+            <template v-else>
+              <span class="tp-label">{{ indicatorLabel(ind.indicatorType) }}</span>
+              <span
+                class="mt-0.5 block truncate font-mono text-xs text-[var(--tp-text-muted)]"
+              >{{ ind.value }}</span>
+            </template>
           </span>
           <span class="shrink-0 font-mono text-xs tabular-nums text-[var(--tp-text-dim)]">
             {{ ind.confidence }}%

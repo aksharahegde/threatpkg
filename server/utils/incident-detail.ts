@@ -1,5 +1,6 @@
 import { and, desc, eq, ne, or } from 'drizzle-orm'
 import type { FeedIncident } from '#shared/types/threat'
+import { isDisplayableAffectedVersion } from '#shared/utils/incident-description'
 import { getDb } from '../db/index'
 import { incidents, indicators } from '../db/schema'
 
@@ -55,15 +56,7 @@ export function affectedVersionsFromIndicators(
   const versions = indicatorRows
     .filter((ind) => ind.indicatorType === 'affected_version')
     .map((ind) => ind.value.trim())
-    .filter(Boolean)
+    .filter((value) => isDisplayableAffectedVersion(value))
 
-  if (versions.length) return [...new Set(versions)]
-
-  const alias = indicatorRows.find((ind) => ind.indicatorType === 'alias')?.value
-  if (alias) {
-    const ids = alias.split(',').map((s) => s.trim()).filter(Boolean)
-    if (ids.length) return ids
-  }
-
-  return ['*']
+  return [...new Set(versions)]
 }

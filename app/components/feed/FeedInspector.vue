@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { remediationCommands } from '#shared/constants/ecosystems'
 import type { FeedIncident } from '#shared/types/threat'
+import { extractIncidentSourceDigests } from '#shared/utils/incident-description'
 import { packagePagePath } from '#shared/utils/package-path'
 import { ecosystemCssClass } from '~/utils/ecosystem'
 import { renderMarkdown } from '~/utils/markdown'
@@ -9,9 +10,14 @@ const props = defineProps<{
   item: FeedIncident | null
 }>()
 
+const parsedDescription = computed(() => {
+  const text = props.item?.description || props.item?.title || ''
+  return extractIncidentSourceDigests(text)
+})
+
 const descriptionHtml = computed(() => {
-  const text = props.item?.description || props.item?.title
-  return text ? renderMarkdown(text) : ''
+  const body = parsedDescription.value.body
+  return body ? renderMarkdown(body) : ''
 })
 
 const severityClass = computed(() => {
@@ -75,6 +81,20 @@ const remediation = computed(() => {
         class="inspector-prose incident-prose mt-4 min-w-0 text-xs leading-relaxed"
         v-html="descriptionHtml"
       />
+
+      <ul
+        v-if="parsedDescription.sources.length"
+        class="mt-4 space-y-2"
+        data-testid="feed-inspector-source-digests"
+      >
+        <li v-for="(source, i) in parsedDescription.sources" :key="`${source.label}-${i}`">
+          <IncidentCopyableDigest
+            :label="source.label"
+            :value="source.digest"
+            :testid="`feed-inspector-source-copy-${i}`"
+          />
+        </li>
+      </ul>
 
       <div class="mt-4">
         <p class="tp-label mb-2">Remediation</p>

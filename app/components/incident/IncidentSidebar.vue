@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { FeedIncident } from '#shared/types/threat'
+import type { IncidentSourceDigest } from '#shared/utils/incident-description'
 import { ecosystemCssClass } from '~/utils/ecosystem'
 
 defineProps<{
   incident: FeedIncident
+  sourceDigests?: IncidentSourceDigest[]
 }>()
 </script>
 
@@ -23,6 +25,19 @@ defineProps<{
         <p class="mt-1 text-sm uppercase text-[var(--tp-text-muted)]">
           {{ incident.source }}
         </p>
+        <ul
+          v-if="sourceDigests?.length"
+          class="mt-3 space-y-2"
+          data-testid="incident-source-digests"
+        >
+          <li v-for="(source, i) in sourceDigests" :key="`${source.label}-${i}`">
+            <IncidentCopyableDigest
+              :label="source.label"
+              :value="source.digest"
+              :testid="`incident-source-digest-copy-${i}`"
+            />
+          </li>
+        </ul>
       </div>
       <div>
         <p class="tp-label">Ecosystem</p>

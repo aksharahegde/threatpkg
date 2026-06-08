@@ -7,6 +7,7 @@ const links: {
   icon: string
 }[] = [
   { label: 'Feed', to: '/', icon: 'i-lucide-radar' },
+  { label: 'Scan', to: '/scan', icon: 'i-lucide-shield-alert' },
   { label: 'About', to: '/about', icon: 'i-lucide-info' }
 ]
 
