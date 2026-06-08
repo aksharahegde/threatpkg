@@ -5,6 +5,7 @@ import { packagePagePath } from '#shared/utils/package-path'
 defineProps<{
   results: ScanPackageResult[]
   pending?: boolean
+  emptyLabel?: string
 }>()
 
 function statusLabel(status: ScanPackageResult['status']) {
@@ -61,7 +62,7 @@ function upgradeCommand(result: ScanPackageResult) {
       <tbody>
         <tr
           v-for="row in results"
-          :key="`${row.ecosystem}-${row.packageName}`"
+          :key="`${row.ecosystem}-${row.packageName}@${row.installedVersion}`"
           class="border-b border-[var(--tp-border)] last:border-0"
           :data-testid="`scan-row-${row.packageName}`"
         >
@@ -127,7 +128,7 @@ function upgradeCommand(result: ScanPackageResult) {
       v-else
       class="py-12 text-center font-tp-mono text-xs text-[var(--tp-text-dim)]"
     >
-      No dependencies parsed yet.
+      {{ emptyLabel ?? 'No dependencies parsed yet.' }}
     </p>
   </div>
 </template>

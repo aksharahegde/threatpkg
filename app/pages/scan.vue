@@ -17,11 +17,30 @@ async function onSubmit(files: DependencyFileInput[]) {
 }
 
 const showOnlyIssues = ref(false)
+const resultSearch = ref('')
 
 const visibleResults = computed(() => {
-  const items = response.value?.results ?? []
-  if (!showOnlyIssues.value) return items
-  return items.filter((r) => r.status !== 'safe')
+  let items = response.value?.results ?? []
+  if (showOnlyIssues.value) {
+    items = items.filter((r) => r.status !== 'safe')
+  }
+
+  const query = resultSearch.value.trim().toLowerCase()
+  if (!query) return items
+
+  return items.filter(
+    (r) =>
+      r.packageName.toLowerCase().includes(query) ||
+      r.installedVersion.toLowerCase().includes(query) ||
+      r.ecosystem.toLowerCase().includes(query) ||
+      r.status.toLowerCase().includes(query)
+  )
+})
+
+const resultsEmptyLabel = computed(() => {
+  if (resultSearch.value.trim()) return 'No packages match your search.'
+  if (showOnlyIssues.value) return 'No compromised or unknown packages.'
+  return 'No dependencies parsed yet.'
 })
 </script>
 
@@ -101,12 +120,35 @@ const visibleResults = computed(() => {
           </div>
         </div>
 
-        <label class="inline-flex items-center gap-2 font-tp-mono text-xs text-[var(--tp-text-muted)]">
-          <input v-model="showOnlyIssues" type="checkbox" class="rounded-sm" />
-          Show only compromised / unknown
-        </label>
+        <div
+          class="flex flex-wrap items-center justify-between gap-3"
+          data-testid="scan-results-filters"
+        >
+          <label class="inline-flex items-center gap-2 font-tp-mono text-xs text-[var(--tp-text-muted)]">
+            <input v-model="showOnlyIssues" type="checkbox" class="rounded-sm" />
+            Show only compromised / unknown
+          </label>
 
-        <ScanResultsTable :results="visibleResults" :pending="pending" />
+          <div class="relative min-w-0 flex-1 sm:max-w-xs" data-testid="scan-results-search">
+            <UIcon
+              name="i-lucide-search"
+              class="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-[var(--tp-text-dim)]"
+            />
+            <input
+              v-model="resultSearch"
+              type="search"
+              placeholder="Search packages…"
+              class="font-tp-mono w-full rounded-sm border border-[var(--tp-border)] bg-[var(--tp-surface-inset)] py-1.5 pl-8 pr-3 text-xs text-[var(--tp-text)] placeholder:text-[var(--tp-text-dim)] focus:border-[var(--tp-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--tp-accent)]"
+              data-testid="scan-results-search-input"
+            />
+          </div>
+        </div>
+
+        <ScanResultsTable
+          :results="visibleResults"
+          :pending="pending"
+          :empty-label="resultsEmptyLabel"
+        />
 
         <div
           v-if="response.warnings.length"
