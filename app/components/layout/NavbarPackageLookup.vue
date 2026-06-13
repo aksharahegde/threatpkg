@@ -10,6 +10,13 @@ const query = ref('')
 const pending = ref(false)
 const error = ref<string | null>(null)
 
+const isWide = useMediaQuery('(min-width: 640px)')
+const placeholder = computed(() =>
+  isWide.value
+    ? 'search package (npm, laravel, flutter, …)…'
+    : 'search package…'
+)
+
 async function lookup() {
   const name = query.value.trim()
   if (!name) return
@@ -40,42 +47,44 @@ function onSubmit(e: Event) {
 
 <template>
   <form
-    class="flex min-w-0 flex-1 items-center gap-2"
+    class="flex min-w-0 flex-1 items-start gap-2"
     data-testid="layout-package-lookup"
     @submit="onSubmit"
   >
-    <label class="tp-label hidden shrink-0 sm:inline" for="pkg-lookup-input">
+    <label class="tp-label hidden shrink-0 sm:inline sm:pt-2" for="pkg-lookup-input">
       PKG_LOOKUP:
     </label>
-    <div class="relative min-w-0 flex-1">
-      <input
-        id="pkg-lookup-input"
-        v-model="query"
-        type="search"
-        autocomplete="off"
-        placeholder="search package (npm, laravel, flutter, …)…"
-        class="font-tp-mono w-full rounded-sm border border-[var(--tp-border)] bg-[var(--tp-surface-inset)] px-3 py-1.5 text-xs text-[var(--tp-text)] placeholder:text-[var(--tp-text-dim)] focus:border-[var(--tp-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--tp-accent)]"
-        data-testid="layout-package-lookup-input"
-      />
+    <div class="min-w-0 flex-1">
+      <div class="flex min-w-0 items-center gap-2">
+        <input
+          id="pkg-lookup-input"
+          v-model="query"
+          type="search"
+          autocomplete="off"
+          :placeholder="placeholder"
+          class="font-tp-mono w-full min-w-0 rounded-sm border border-[var(--tp-border)] bg-[var(--tp-surface-inset)] px-3 py-1.5 text-base text-[var(--tp-text)] placeholder:text-[var(--tp-text-dim)] focus:border-[var(--tp-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--tp-accent)] sm:text-xs"
+          data-testid="layout-package-lookup-input"
+        />
+        <button
+          type="submit"
+          class="tp-pill inline-flex min-h-9 min-w-9 shrink-0 items-center justify-center rounded-sm p-0"
+          :disabled="pending || !query.trim()"
+          data-testid="layout-package-lookup-submit"
+        >
+          <UIcon
+            v-if="pending"
+            name="i-lucide-loader-circle"
+            class="size-3.5 animate-spin"
+          />
+          <UIcon v-else name="i-lucide-search" class="size-3.5" />
+        </button>
+      </div>
       <p
         v-if="error"
-        class="absolute top-full mt-0.5 font-tp-mono text-[10px] text-red-500"
+        class="mt-0.5 font-tp-mono text-[10px] text-red-500"
       >
         {{ error }}
       </p>
     </div>
-    <button
-      type="submit"
-      class="tp-pill shrink-0 rounded-sm px-2.5 py-1.5"
-      :disabled="pending || !query.trim()"
-      data-testid="layout-package-lookup-submit"
-    >
-      <UIcon
-        v-if="pending"
-        name="i-lucide-loader-circle"
-        class="size-3.5 animate-spin"
-      />
-      <UIcon v-else name="i-lucide-search" class="size-3.5" />
-    </button>
   </form>
 </template>
