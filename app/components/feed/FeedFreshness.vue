@@ -13,25 +13,51 @@ const { data } = useFetch<SourcesResponse>('/api/sources', {
   default: () => ({ lastSyncedAt: null, sources: [] })
 })
 
+const lastSyncedAt = computed(() => data.value?.lastSyncedAt ?? null)
+
 const isLive = computed(() => {
-  const at = data.value?.lastSyncedAt
+  const at = lastSyncedAt.value
   if (!at) return false
   return Date.now() - new Date(at).getTime() < 30 * 60_000
 })
 
-const statusLabel = computed(() =>
-  isLive.value ? 'SYSTEM LIVE' : 'SYNC STALE'
-)
+function formatSyncTime(iso: string, compact: boolean) {
+  const d = new Date(iso)
+  if (compact) {
+    return d.toLocaleString(undefined, {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit'
+    })
+  }
+  return d.toLocaleString(undefined, {
+    dateStyle: 'medium',
+    timeStyle: 'short'
+  })
+}
 
-const shortStatusLabel = computed(() =>
-  isLive.value ? 'LIVE' : 'STALE'
-)
+const displayLabel = computed(() => {
+  if (isLive.value) {
+    return { short: 'LIVE', long: 'SYSTEM LIVE', aria: 'SYSTEM LIVE' }
+  }
+  if (!lastSyncedAt.value) {
+    return { short: '—', long: 'Sync time unknown', aria: 'Sync time unknown' }
+  }
+  const formatted = formatSyncTime(lastSyncedAt.value, false)
+  const compact = formatSyncTime(lastSyncedAt.value, true)
+  return {
+    short: compact,
+    long: formatted,
+    aria: `Last synced ${formatted}`
+  }
+})
 </script>
 
 <template>
   <span
     class="inline-flex items-center gap-1.5 font-tp-mono text-[10px] uppercase tracking-wider text-[var(--tp-text-muted)]"
-    :aria-label="statusLabel"
+    :aria-label="displayLabel.aria"
     :title="
       data?.sources
         ?.map((s) => `${s.name}: ${s.lastSyncedAt ? new Date(s.lastSyncedAt).toLocaleString() : 'never'}`)
@@ -44,16 +70,16 @@ const shortStatusLabel = computed(() =>
       :class="isLive ? 'bg-[var(--tp-live)] tp-live-dot' : 'bg-amber-500'"
     />
     <span
-      class="sm:hidden"
+      class="normal-case sm:hidden"
       :class="isLive ? 'text-[var(--tp-live)]' : ''"
     >
-      {{ shortStatusLabel }}
+      {{ displayLabel.short }}
     </span>
     <span
-      class="hidden sm:inline"
+      class="hidden normal-case sm:inline"
       :class="isLive ? 'text-[var(--tp-live)]' : ''"
     >
-      {{ statusLabel }}
+      {{ displayLabel.long }}
     </span>
   </span>
 </template>
