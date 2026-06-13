@@ -122,7 +122,7 @@ function ecoBadgeClass(eco: string) {
               </span>
               <NuxtLink
                 :to="packagePagePath(item.ecosystem, item.packageName)"
-                class="font-tp-mono text-sm font-semibold text-[var(--tp-text)] hover:text-[var(--tp-accent)]"
+                class="font-tp-mono block min-w-0 truncate text-sm font-semibold text-[var(--tp-text)] hover:text-[var(--tp-accent)]"
                 data-testid="feed-package-link"
                 @click.stop
               >

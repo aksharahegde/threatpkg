@@ -50,7 +50,7 @@ const remediation = computed(() => {
       <div class="mt-4">
         <NuxtLink
           :to="packagePagePath(item.ecosystem, item.packageName)"
-          class="font-tp-mono text-xl font-semibold text-[var(--tp-text)] hover:text-[var(--tp-accent)]"
+          class="font-tp-mono block min-w-0 truncate text-lg font-semibold text-[var(--tp-text)] hover:text-[var(--tp-accent)] sm:text-xl"
           data-testid="feed-package-link"
         >
           {{ item.packageName }}

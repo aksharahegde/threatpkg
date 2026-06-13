@@ -84,7 +84,10 @@ function onPillClick(pill: FilterPill) {
 
       <div class="hidden w-px self-stretch bg-[var(--tp-border)] sm:block" />
 
-      <div class="hidden w-28 md:block" data-testid="feed-filter-threat-type">
+      <div
+        class="min-w-0 flex-1 basis-[calc(50%-0.375rem)] sm:w-28 sm:flex-none"
+        data-testid="feed-filter-threat-type"
+      >
         <USelect
           :model-value="filters.threatType"
           placeholder="Type"
@@ -104,7 +107,10 @@ function onPillClick(pill: FilterPill) {
         />
       </div>
 
-      <div class="hidden w-24 md:block" data-testid="feed-filter-source">
+      <div
+        class="min-w-0 flex-1 basis-[calc(50%-0.375rem)] sm:w-24 sm:flex-none"
+        data-testid="feed-filter-source"
+      >
         <USelect
           :model-value="filters.source"
           placeholder="Source"
@@ -121,7 +127,10 @@ function onPillClick(pill: FilterPill) {
         />
       </div>
 
-      <div class="hidden w-24 sm:block" data-testid="feed-filter-time-range">
+      <div
+        class="min-w-0 basis-full sm:w-24 sm:flex-none sm:basis-auto"
+        data-testid="feed-filter-time-range"
+      >
         <USelect
           :model-value="filters.range"
           size="xs"

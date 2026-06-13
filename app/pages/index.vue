@@ -94,7 +94,7 @@ watch(
 <template>
   <div class="flex min-h-0 flex-1 flex-col lg:flex-row">
     <aside
-      class="flex w-full shrink-0 flex-col gap-4 overflow-y-auto border-b border-[var(--tp-border)] bg-[var(--tp-bg)] p-4 lg:w-72 lg:border-b-0 lg:border-r"
+      class="order-2 flex w-full shrink-0 flex-col gap-4 overflow-y-auto border-b border-[var(--tp-border)] bg-[var(--tp-bg)] p-3 sm:p-4 lg:order-none lg:w-72 lg:border-b-0 lg:border-r"
     >
       <div>
         <h1
@@ -120,7 +120,7 @@ watch(
       <ChartsFeedTrendChart :counts="trend" :range="filters.range" />
     </aside>
 
-    <main class="flex min-h-0 min-w-0 flex-1 flex-col">
+    <main class="order-1 flex min-h-0 min-w-0 flex-1 flex-col lg:order-none">
       <FeedFilters v-model:filters="filters" @refresh="refresh()">
         <template #count>
           <span class="font-tp-mono text-[10px] text-[var(--tp-text-dim)]">
@@ -129,7 +129,10 @@ watch(
         </template>
       </FeedFilters>
 
-      <div class="border-b border-[var(--tp-border)] bg-[var(--tp-surface)] px-4 py-2 lg:hidden">
+      <div
+        v-if="selectedId"
+        class="border-b border-[var(--tp-border)] bg-[var(--tp-surface)] px-4 py-2 lg:hidden"
+      >
         <FeedInspector :item="selectedItem" />
       </div>
       <FeedThreatFeedTable
