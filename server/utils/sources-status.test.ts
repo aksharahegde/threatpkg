@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { freshestSyncAt } from './sources-status'
+import { freshestSyncAt, serializeSourceStatus } from './sources-status'
 
 describe('freshestSyncAt', () => {
   it('returns the newest sync timestamp', () => {
@@ -34,5 +34,45 @@ describe('freshestSyncAt', () => {
         }
       ])
     ).toBeNull()
+  })
+})
+
+describe('serializeSourceStatus', () => {
+  const baseRow = {
+    id: '00000000-0000-0000-0000-000000000000',
+    name: 'OSV',
+    type: 'api',
+    url: 'https://osv.dev/',
+    enabled: true
+  }
+
+  it('serializes Date sync timestamps', () => {
+    expect(
+      serializeSourceStatus({
+        ...baseRow,
+        lastSyncedAt: new Date('2024-06-01T12:00:00.000Z')
+      })
+    ).toEqual({
+      name: 'OSV',
+      type: 'api',
+      url: 'https://osv.dev/',
+      enabled: true,
+      lastSyncedAt: '2024-06-01T12:00:00.000Z'
+    })
+  })
+
+  it('preserves string sync timestamps returned by the runtime', () => {
+    expect(
+      serializeSourceStatus({
+        ...baseRow,
+        lastSyncedAt: '2024-06-01T12:00:00.000Z'
+      })
+    ).toEqual({
+      name: 'OSV',
+      type: 'api',
+      url: 'https://osv.dev/',
+      enabled: true,
+      lastSyncedAt: '2024-06-01T12:00:00.000Z'
+    })
   })
 })
